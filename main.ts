@@ -29,10 +29,10 @@ function convertEnumToObject(enumDeclaration: EnumDeclaration): void {
   const objectDeclaration = `const ${enumName} = {\n  ${objectMembers}\n} as const;`;
 
   // Create the type definition
-  const typeDefinition = `type ${enumName} = typeof ${enumName}[keyof typeof ${enumName}];`;
+  const typeDefinition = `type ${enumName}Type = typeof ${enumName}[keyof typeof ${enumName}];`;
 
   // Replace the enum with object and type
-  enumDeclaration.replaceWithText(`${objectDeclaration}\n\n${typeDefinition}`);
+  enumDeclaration.replaceWithText(`${objectDeclaration}\n${typeDefinition}`);
 }
 
 function updateEnumReferences(sourceFile: Node, enumNames: string[]): void {
@@ -50,31 +50,38 @@ function updateEnumReferences(sourceFile: Node, enumNames: string[]): void {
       // Check if this is a reference to a converted enum
       if (enumNames.includes(name)) {
         // This is a reference to an enum, update it to use the new type
-        typeRef.replaceWithText(name);
+        typeRef.replaceWithText(`${name}Type`);
       }
     }
   });
-}
 
-function updateEnumValueReferences(
-  sourceFile: Node,
-  enumNames: string[]
-): void {
-  // Find all property access expressions that might be enum value references
-  const propertyAccesses = sourceFile.getDescendantsOfKind(
-    SyntaxKind.PropertyAccessExpression
-  );
+  // Find all union types that might contain enum value references
+  // Update all type nodes that reference enum values (not just unions)
+  const typeNodes = sourceFile.getDescendantsOfKind(SyntaxKind.TypeReference);
 
-  propertyAccesses.forEach((propAccess) => {
-    const expression = propAccess.getExpression();
-    if (expression.getKind() === SyntaxKind.Identifier) {
-      const identifier = expression as Identifier;
-      const name = identifier.getText();
-
-      // Check if this is a reference to a converted enum
-      if (enumNames.includes(name)) {
-        // This is a reference to an enum value, update it to use the new object
-        propAccess.replaceWithText(propAccess.getText());
+  typeNodes.forEach((typeNode) => {
+    // We want to find type references of the form EnumName.Property
+    // In ts-morph, these are QualifiedName nodes inside TypeReferenceNode
+    const typeName = typeNode.getTypeName();
+    if (typeName.getKind() === SyntaxKind.QualifiedName) {
+      // deno-lint-ignore no-explicit-any
+      const qualifiedName = typeName as any;
+      const left = qualifiedName.getLeft();
+      const right = qualifiedName.getRight();
+      if (
+        left.getKind() === SyntaxKind.Identifier &&
+        right.getKind() === SyntaxKind.Identifier
+      ) {
+        const enumName = left.getText();
+        const propertyName = right.getText();
+        // Check if this is a reference to a converted enum value
+        console.log({ enumName, propertyName });
+        if (enumNames.includes(enumName)) {
+          // Replace the type node with Extract<EnumType, 'Property'>
+          typeNode.replaceWithText(
+            `Extract<${enumName}Type, typeof ${enumName}.${propertyName}>`
+          );
+        }
       }
     }
   });
@@ -83,18 +90,18 @@ function updateEnumValueReferences(
 function runCodemod(filePath: string): void {
   const sourceFile = project.addSourceFileAtPath(filePath);
 
-  // Get all enums before conversion
+  // Get all enums before conversion and store their names
   const enums = sourceFile.getEnums();
-  const enumNames = enums
-    .map((enumDecl) => enumDecl.getName())
-    .filter(Boolean) as string[];
+  const enumNames = enums.map((enumDecl) => enumDecl.getName()).filter(Boolean);
+
+  console.log(`Found enums: ${enumNames.join(", ")}`);
 
   // Convert all enums to objects
   enums.forEach(convertEnumToObject);
 
   // Update references after conversion
   updateEnumReferences(sourceFile, enumNames);
-  updateEnumValueReferences(sourceFile, enumNames);
+  // updateEnumValueReferences(sourceFile, enumNames);
 
   // Save the changes
   sourceFile.saveSync();
@@ -102,3 +109,14 @@ function runCodemod(filePath: string): void {
 
 // Export the main function
 export { runCodemod };
+
+// Main execution
+if (import.meta.main) {
+  const filePath = Deno.args[0];
+  if (!filePath) {
+    console.error("Please provide a file path as an argument");
+    Deno.exit(1);
+  }
+  runCodemod(filePath);
+  console.log(`Successfully converted enums in ${filePath}`);
+}
