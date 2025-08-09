@@ -16,14 +16,15 @@ function convertEnumToObject(enumDeclaration: EnumDeclaration): void {
   const enumMembers = enumDeclaration.getMembers();
 
   // Create the object literal
-  const objectMembers = enumMembers
-    .map((member) => {
-      const name = member.getName();
-      const initializer = member.getInitializer();
-      const value = initializer ? initializer.getText() : member.getValue();
-      return `${name}: ${value}`;
-    })
-    .join(",\n  ");
+  const objectMembers =
+    enumMembers
+      .map((member) => {
+        const name = member.getName();
+        const initializer = member.getInitializer();
+        const value = initializer ? initializer.getText() : member.getValue();
+        return `${name}: ${value}`;
+      })
+      .join(",\n  ") + ","; // Add trailing comma
 
   // Create the object declaration
   const objectDeclaration = `const ${enumName} = {\n  ${objectMembers}\n} as const;`;

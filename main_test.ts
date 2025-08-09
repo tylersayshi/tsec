@@ -679,137 +679,24 @@ function checkFileSize(size: number): string {
   }
 });
 
+Deno.test("comprehensive enum transformation - full sample", async () => {
+  const utils = new TestUtils();
+  const testFile = "comprehensive_sample.ts";
+
+  try {
+    const sampleContent = await Deno.readTextFile("spec/comprehensive.in.ts");
+
+    await utils.createTestFile(testFile, sampleContent);
+    const result = await utils.runCodemodAndSnapshot(testFile);
+    await checkTsFile(testFile);
+    await Deno.writeTextFile("tmp/out.ts", result);
+    assertEquals(result, await Deno.readTextFile("spec/comprehensive.out.ts"));
+  } finally {
+    await utils.cleanup();
+  }
+});
+
 // TODO LAZINESS START
-Deno.test.ignore(
-  "comprehensive enum transformation - full sample",
-  async () => {
-    const utils = new TestUtils();
-    const testFile = "comprehensive_sample.ts";
-
-    try {
-      const sampleContent = `enum Color {
-  Red = "red",
-  Green = "green",
-  Blue = "blue",
-}
-
-enum Status {
-  Pending = 0,
-  Active = 1,
-  Inactive = 2,
-}
-
-enum Direction {
-  North = "NORTH",
-  South = "SOUTH",
-  East = "EAST",
-  West = "WEST",
-}
-
-enum Priority {
-  Low = 0,
-  Medium = 1,
-  High = 2,
-  Critical = "CRITICAL",
-}
-
-function _getColorName(color: Color): string {
-  return color;
-}
-
-function _getStatusText(status: Status): string {
-  switch (status) {
-    case Status.Pending:
-      return "Pending";
-    case Status.Active:
-      return "Active";
-    case Status.Inactive:
-      return "Inactive";
-    default:
-      return "Unknown";
-  }
-}
-
-interface User {
-  id: number;
-  name: string;
-  status: Status;
-  favoriteColor: Color;
-}
-
-class Navigation {
-  private currentDirection: Direction = Direction.North;
-
-  turnLeft(): void {
-    switch (this.currentDirection) {
-      case Direction.North:
-        this.currentDirection = Direction.West;
-        break;
-      case Direction.West:
-        this.currentDirection = Direction.South;
-        break;
-      case Direction.South:
-        this.currentDirection = Direction.East;
-        break;
-      case Direction.East:
-        this.currentDirection = Direction.North;
-        break;
-    }
-  }
-
-  getDirection(): Direction {
-    return this.currentDirection;
-  }
-}
-
-type TaskPriority = Priority.Low | Priority.Medium | Priority.High;
-
-function processTask(priority: TaskPriority): void {
-  console.log(\`Processing task with priority: \${priority}\`);
-}
-
-function _handleLowPriority(p: Priority.Low): void {
-  console.log(\`Handling low priority task: \${p}\`);
-}
-
-const _allColors: Color[] = [Color.Red, Color.Green, Color.Blue];
-
-const _colorMap: Record<Color, string> = {
-  [Color.Red]: "#FF0000",
-  [Color.Green]: "#00FF00",
-  [Color.Blue]: "#0000FF",
-};
-
-function _createEnumArray<T extends string>(enumObj: Record<string, T>): T[] {
-  return Object.values(enumObj);
-}
-
-const _user: User = {
-  id: 1,
-  name: "John",
-  status: Status.Active,
-  favoriteColor: Color.Blue,
-};
-
-const navigation = new Navigation();
-navigation.turnLeft();
-console.log(navigation.getDirection());
-
-processTask(Priority.High);
-
-export { Color, Status, Direction, Priority };
-export type { User, TaskPriority };`;
-
-      await utils.createTestFile(testFile, sampleContent);
-      const result = await utils.runCodemodAndSnapshot(testFile);
-      await checkTsFile(testFile);
-      assertEquals(result, "todo");
-    } finally {
-      await utils.cleanup();
-    }
-  }
-);
-
 Deno.test.ignore(
   "enum usage in destructuring and object patterns",
   async () => {
@@ -872,7 +759,7 @@ function handleThemeChange(newTheme: Theme): void {
     } finally {
       await utils.cleanup();
     }
-  }
+  },
 );
 
 Deno.test.ignore(
@@ -938,7 +825,7 @@ logger.error(\`Critical error in \${Environment.Production} environment\`);`;
     } finally {
       await utils.cleanup();
     }
-  }
+  },
 );
 
 Deno.test.ignore("enum usage with generics and type constraints", async () => {
@@ -1029,253 +916,13 @@ Deno.test(
     const testFile = "data_structures_test.ts";
 
     try {
-      const originalContent = `enum HttpStatus {
-  OK = 200,
-  Created = 201,
-  BadRequest = 400,
-  Unauthorized = 401,
-  NotFound = 404,
-  InternalServerError = 500
-}
+      const originalContent = await Deno.readTextFile(
+        "spec/data-structures.in.ts",
+      );
 
-enum HttpMethod {
-  GET = "GET",
-  POST = "POST", 
-  PUT = "PUT",
-  DELETE = "DELETE",
-  PATCH = "PATCH"
-}
-
-type ApiEndpoint = {
-  path: string;
-  method: HttpMethod;
-  expectedStatus: HttpStatus[];
-};
-
-const endpoints: Map<string, ApiEndpoint> = new Map([
-  ["getUser", { 
-    path: "/users/:id", 
-    method: HttpMethod.GET, 
-    expectedStatus: [HttpStatus.OK, HttpStatus.NotFound] 
-  }],
-  ["createUser", { 
-    path: "/users", 
-    method: HttpMethod.POST, 
-    expectedStatus: [HttpStatus.Created, HttpStatus.BadRequest] 
-  }],
-  ["updateUser", { 
-    path: "/users/:id", 
-    method: HttpMethod.PUT, 
-    expectedStatus: [HttpStatus.OK, HttpStatus.NotFound, HttpStatus.BadRequest] 
-  }],
-  ["deleteUser", { 
-    path: "/users/:id", 
-    method: HttpMethod.DELETE, 
-    expectedStatus: [HttpStatus.OK, HttpStatus.NotFound] 
-  }]
-]);
-
-const statusMessages: Record<HttpStatus, string> = {
-  [HttpStatus.OK]: "Request successful",
-  [HttpStatus.Created]: "Resource created successfully",
-  [HttpStatus.BadRequest]: "Invalid request data",
-  [HttpStatus.Unauthorized]: "Authentication required",
-  [HttpStatus.NotFound]: "Resource not found", 
-  [HttpStatus.InternalServerError]: "Server error occurred"
-};
-
-const allowedMethods: Set<HttpMethod> = new Set([
-  HttpMethod.GET,
-  HttpMethod.POST,
-  HttpMethod.PUT,
-  HttpMethod.DELETE
-]);
-
-function validateResponse(status: HttpStatus, method: HttpMethod): boolean {
-  const successStatuses = [HttpStatus.OK, HttpStatus.Created];
-  const errorStatuses = [
-    HttpStatus.BadRequest, 
-    HttpStatus.Unauthorized, 
-    HttpStatus.NotFound,
-    HttpStatus.InternalServerError
-  ];
-  
-  return [...successStatuses, ...errorStatuses].includes(status) && 
-         allowedMethods.has(method);
-}
-
-class ApiClient {
-  private requestHistory: Array<{
-    method: HttpMethod;
-    status: HttpStatus;
-    timestamp: Date;
-  }> = [];
-
-  private async makeRequest(method: HttpMethod): Promise<HttpStatus> {
-    // Simulate API call
-    const statuses = Object.values(HttpStatus).filter(
-      (s): s is HttpStatus => typeof s === 'number'
-    );
-    const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
-    
-    this.requestHistory.push({
-      method,
-      status: randomStatus,
-      timestamp: new Date()
-    });
-    
-    return randomStatus;
-  }
-
-  async get(): Promise<HttpStatus> { 
-    return this.makeRequest(HttpMethod.GET); 
-  }
-  
-  async post(): Promise<HttpStatus> { 
-    return this.makeRequest(HttpMethod.POST); 
-  }
-
-  getRequestStats(): Record<HttpMethod, number> {
-    const stats: Record<HttpMethod, number> = {
-      [HttpMethod.GET]: 0,
-      [HttpMethod.POST]: 0,
-      [HttpMethod.PUT]: 0,
-      [HttpMethod.DELETE]: 0,
-      [HttpMethod.PATCH]: 0
-    };
-
-    for (const request of this.requestHistory) {
-      stats[request.method]++;
-    }
-
-    return stats;
-  }
-}`;
-
-      const expectedOutput = `const HttpStatus = {
-  OK: 200,
-  Created: 201,
-  BadRequest: 400,
-  Unauthorized: 401,
-  NotFound: 404,
-  InternalServerError: 500
-} as const;
-type HttpStatusType = typeof HttpStatus[keyof typeof HttpStatus];
-
-const HttpMethod = {
-  GET: "GET",
-  POST: "POST",
-  PUT: "PUT",
-  DELETE: "DELETE",
-  PATCH: "PATCH"
-} as const;
-type HttpMethodType = typeof HttpMethod[keyof typeof HttpMethod];
-
-type ApiEndpoint = {
-  path: string;
-  method: HttpMethodType;
-  expectedStatus: HttpStatusType[];
-};
-
-const endpoints: Map<string, ApiEndpoint> = new Map([
-  ["getUser", { 
-    path: "/users/:id", 
-    method: HttpMethod.GET, 
-    expectedStatus: [HttpStatus.OK, HttpStatus.NotFound] 
-  }],
-  ["createUser", { 
-    path: "/users", 
-    method: HttpMethod.POST, 
-    expectedStatus: [HttpStatus.Created, HttpStatus.BadRequest] 
-  }],
-  ["updateUser", { 
-    path: "/users/:id", 
-    method: HttpMethod.PUT, 
-    expectedStatus: [HttpStatus.OK, HttpStatus.NotFound, HttpStatus.BadRequest] 
-  }],
-  ["deleteUser", { 
-    path: "/users/:id", 
-    method: HttpMethod.DELETE, 
-    expectedStatus: [HttpStatus.OK, HttpStatus.NotFound] 
-  }]
-]);
-
-const statusMessages: Record<HttpStatusType, string> = {
-  [HttpStatus.OK]: "Request successful",
-  [HttpStatus.Created]: "Resource created successfully",
-  [HttpStatus.BadRequest]: "Invalid request data",
-  [HttpStatus.Unauthorized]: "Authentication required",
-  [HttpStatus.NotFound]: "Resource not found", 
-  [HttpStatus.InternalServerError]: "Server error occurred"
-};
-
-const allowedMethods: Set<HttpMethodType> = new Set([
-  HttpMethod.GET,
-  HttpMethod.POST,
-  HttpMethod.PUT,
-  HttpMethod.DELETE
-]);
-
-function validateResponse(status: HttpStatusType, method: HttpMethodType): boolean {
-  const successStatuses = [HttpStatus.OK, HttpStatus.Created];
-  const errorStatuses = [
-    HttpStatus.BadRequest, 
-    HttpStatus.Unauthorized, 
-    HttpStatus.NotFound,
-    HttpStatus.InternalServerError
-  ];
-  
-  return [...successStatuses, ...errorStatuses].includes(status) && 
-         allowedMethods.has(method);
-}
-
-class ApiClient {
-  private requestHistory: Array<{
-    method: HttpMethodType;
-    status: HttpStatusType;
-    timestamp: Date;
-  }> = [];
-
-  private async makeRequest(method: HttpMethodType): Promise<HttpStatusType> {
-    // Simulate API call
-    const statuses = Object.values(HttpStatus).filter(
-      (s): s is HttpStatusType => typeof s === 'number'
-    );
-    const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
-    
-    this.requestHistory.push({
-      method,
-      status: randomStatus,
-      timestamp: new Date()
-    });
-    
-    return randomStatus;
-  }
-
-  async get(): Promise<HttpStatusType> { 
-    return this.makeRequest(HttpMethod.GET); 
-  }
-  
-  async post(): Promise<HttpStatusType> { 
-    return this.makeRequest(HttpMethod.POST); 
-  }
-
-  getRequestStats(): Record<HttpMethodType, number> {
-    const stats: Record<HttpMethodType, number> = {
-      [HttpMethod.GET]: 0,
-      [HttpMethod.POST]: 0,
-      [HttpMethod.PUT]: 0,
-      [HttpMethod.DELETE]: 0,
-      [HttpMethod.PATCH]: 0
-    };
-
-    for (const request of this.requestHistory) {
-      stats[request.method]++;
-    }
-
-    return stats;
-  }
-}`;
+      const expectedOutput = await Deno.readTextFile(
+        "spec/data-structures.out.ts",
+      );
 
       await utils.createTestFile(testFile, originalContent);
       const result = await utils.runCodemodAndSnapshot(testFile);
@@ -1284,81 +931,5 @@ class ApiClient {
     } finally {
       await utils.cleanup();
     }
-  }
+  },
 );
-
-Deno.test.ignore("const enum and computed enum values", async () => {
-  const utils = new TestUtils();
-  const testFile = "const_computed_enum_test.ts";
-
-  try {
-    const originalContent = `const enum FilePermission {
-  None = 0,
-  Read = 1 << 0,
-  Write = 1 << 1, 
-  Execute = 1 << 2,
-  All = Read | Write | Execute
-}
-
-enum ResponseCode {
-  Success = 200,
-  Redirect = 300,
-  ClientError = 400,
-  ServerError = 500,
-  
-  // Computed values
-  NotModified = Success + 4,
-  UnprocessableEntity = ClientError + 22,
-  BadGateway = ServerError + 2
-}
-
-enum MathConstants {
-  Zero = 0,
-  One = Zero + 1,
-  Two = One + 1,
-  Four = Two * 2,
-  Eight = Four * 2
-}
-
-function hasPermission(userPerms: FilePermission, required: FilePermission): boolean {
-  return (userPerms & required) === required;
-}
-
-function checkResponseType(code: ResponseCode): string {
-  if (code < ResponseCode.Redirect) return "success";
-  if (code < ResponseCode.ClientError) return "redirect"; 
-  if (code < ResponseCode.ServerError) return "client_error";
-  return "server_error";
-}
-
-const adminPermissions: FilePermission = FilePermission.All;
-const readOnlyPermissions: FilePermission = FilePermission.Read;
-
-class PermissionChecker {
-  static canWrite(perms: FilePermission): boolean {
-    return hasPermission(perms, FilePermission.Write);
-  }
-  
-  static canExecute(perms: FilePermission): boolean {
-    return hasPermission(perms, FilePermission.Execute);
-  }
-}
-
-const mathOperations = {
-  [MathConstants.Zero]: (a: number) => 0,
-  [MathConstants.One]: (a: number) => a,
-  [MathConstants.Two]: (a: number) => a * 2,
-  [MathConstants.Four]: (a: number) => a * 4,
-  [MathConstants.Eight]: (a: number) => a * 8
-};`;
-
-    const expectedOutput = "todo";
-
-    await utils.createTestFile(testFile, originalContent);
-    const result = await utils.runCodemodAndSnapshot(testFile);
-    await checkTsFile(testFile);
-    assertEquals(result, expectedOutput);
-  } finally {
-    await utils.cleanup();
-  }
-});
