@@ -18,15 +18,21 @@ function convertEnumToObject(enumDeclaration: EnumDeclaration): void {
   const objectMembers = enumMembers
     .map((member) => {
       const name = member.getName();
+      const comment = member.getLeadingCommentRanges()[0]?.getText();
       const initializer = member.getInitializer();
       const value = initializer ? initializer.getText() : member.getValue();
-      return `${name}: ${value}`;
+      const keyValue = `${name}: ${value}`;
+      return comment ? comment + "\n  " + keyValue : keyValue;
     })
     .join(",\n  ") + ","; // Add trailing comma
 
   // Create the object declaration
-  const objectDeclaration =
+  let objectDeclaration =
     `const ${enumName} = {\n  ${objectMembers}\n} as const;`;
+  const enumComment = enumDeclaration.getLeadingCommentRanges()[0]?.getText();
+  if (enumComment) {
+    objectDeclaration = enumComment + "\n" + objectDeclaration;
+  }
 
   // Create the type definition
   const typeDefinition =

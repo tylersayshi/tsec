@@ -44,7 +44,7 @@ class TestUtils {
     return await Deno.readTextFile(filePath);
   }
 
-  async runCodemodAndSnapshot(filePath: string): Promise<string> {
+  async runAndReadCodemod(filePath: string): Promise<string> {
     runCodemod(filePath);
     return await this.readTestFile(filePath);
   }
@@ -81,7 +81,7 @@ const userColor: Color = Color.Blue;`;
     const expectedOutput = `const Color = {
   Red: "red",
   Blue: "blue",
-  Green: "green"
+  Green: "green",
 } as const;
 type ColorType = typeof Color[keyof typeof Color];
 
@@ -92,7 +92,7 @@ function getColorName(color: ColorType): string {
 const userColor: ColorType = Color.Blue;`;
 
     await utils.createTestFile(testFile, originalContent);
-    const result = await utils.runCodemodAndSnapshot(testFile);
+    const result = await utils.runAndReadCodemod(testFile);
     await checkTsFile(testFile);
     assertEquals(result, expectedOutput);
   } finally {
@@ -126,7 +126,7 @@ function createUser(name: string): User {
     const expectedOutput = `const Status = {
   Pending: 0,
   Active: 1,
-  Inactive: 2
+  Inactive: 2,
 } as const;
 type StatusType = typeof Status[keyof typeof Status];
 
@@ -143,7 +143,7 @@ function createUser(name: string): User {
 }`;
 
     await utils.createTestFile(testFile, originalContent);
-    const result = await utils.runCodemodAndSnapshot(testFile);
+    const result = await utils.runAndReadCodemod(testFile);
     await checkTsFile(testFile);
     assertEquals(result, expectedOutput);
   } finally {
@@ -174,7 +174,7 @@ const compass: Direction[] = [
   North: 0,
   South: 1,
   East: 2,
-  West: 3
+  West: 3,
 } as const;
 type DirectionType = typeof Direction[keyof typeof Direction];
 
@@ -186,7 +186,7 @@ const compass: DirectionType[] = [
 ];`;
 
     await utils.createTestFile(testFile, originalContent);
-    const result = await utils.runCodemodAndSnapshot(testFile);
+    const result = await utils.runAndReadCodemod(testFile);
     await checkTsFile(testFile);
     assertEquals(result, expectedOutput);
   } finally {
@@ -225,7 +225,7 @@ function handleMixed(value: MixedEnum): string {
   First: 1,
   Second: "second",
   Third: 3,
-  Fourth: "fourth"
+  Fourth: "fourth",
 } as const;
 type MixedEnumType = typeof MixedEnum[keyof typeof MixedEnum];
 
@@ -245,7 +245,7 @@ function handleMixed(value: MixedEnumType): string {
 }`;
 
     await utils.createTestFile(testFile, originalContent);
-    const result = await utils.runCodemodAndSnapshot(testFile);
+    const result = await utils.runAndReadCodemod(testFile);
     await checkTsFile(testFile);
     assertEquals(result, expectedOutput);
   } finally {
@@ -302,20 +302,20 @@ class TaskManager {
 
     const expectedOutput = `const Color = {
   Red: "red",
-  Blue: "blue"
+  Blue: "blue",
 } as const;
 type ColorType = typeof Color[keyof typeof Color];
 
 const Status = {
   Active: 1,
-  Inactive: 0
+  Inactive: 0,
 } as const;
 type StatusType = typeof Status[keyof typeof Status];
 
 const Priority = {
   Low: 0,
   Medium: 1,
-  High: 2
+  High: 2,
 } as const;
 type PriorityType = typeof Priority[keyof typeof Priority];
 
@@ -346,7 +346,7 @@ class TaskManager {
 }`;
 
     await utils.createTestFile(testFile, originalContent);
-    const result = await utils.runCodemodAndSnapshot(testFile);
+    const result = await utils.runAndReadCodemod(testFile);
     await checkTsFile(testFile);
     assertEquals(result, expectedOutput);
   } finally {
@@ -436,7 +436,7 @@ const usersRequest: ApiRequest = {
     const expectedOutput = `const ApiEndpoint = {
   Users: "/api/users",
   Posts: "/api/posts",
-  Comments: "/api/comments"
+  Comments: "/api/comments",
 } as const;
 type ApiEndpointType = typeof ApiEndpoint[keyof typeof ApiEndpoint];
 
@@ -444,14 +444,14 @@ const HttpMethod = {
   GET: "GET",
   POST: "POST",
   PUT: "PUT",
-  DELETE: "DELETE"
+  DELETE: "DELETE",
 } as const;
 type HttpMethodType = typeof HttpMethod[keyof typeof HttpMethod];
 
 const ResponseStatus = {
   Success: 200,
   NotFound: 404,
-  ServerError: 500
+  ServerError: 500,
 } as const;
 type ResponseStatusType = typeof ResponseStatus[keyof typeof ResponseStatus];
 
@@ -511,7 +511,7 @@ const usersRequest: ApiRequest = {
 };`;
 
     await utils.createTestFile(testFile, originalContent);
-    const result = await utils.runCodemodAndSnapshot(testFile);
+    const result = await utils.runAndReadCodemod(testFile);
     await checkTsFile(testFile);
     assertEquals(result, expectedOutput);
   } finally {
@@ -543,7 +543,7 @@ log(LogLevel.Error, "Something went wrong");`;
   Debug: 0,
   Info: 1,
   Warn: 2,
-  Error: 3
+  Error: 3,
 } as const;
 type LogLevelType = typeof LogLevel[keyof typeof LogLevel];
 
@@ -556,7 +556,7 @@ function log(level: LogLevelType, message: string): void {
 log(LogLevel.Error, "Something went wrong");`;
 
     await utils.createTestFile(testFile, originalContent);
-    const result = await utils.runCodemodAndSnapshot(testFile);
+    const result = await utils.runAndReadCodemod(testFile);
     await checkTsFile(testFile);
     assertEquals(result, expectedOutput);
   } finally {
@@ -609,7 +609,7 @@ const UserRole = {
   /** Moderator with elevated permissions */
   Moderator: "moderator",
   /** Administrator with full access */
-  Admin: "admin"
+  Admin: "admin",
 } as const;
 type UserRoleType = typeof UserRole[keyof typeof UserRole];
 
@@ -633,7 +633,7 @@ function hasPermission(role: UserRoleType, action: string): boolean {
 }`;
 
     await utils.createTestFile(testFile, originalContent);
-    const result = await utils.runCodemodAndSnapshot(testFile);
+    const result = await utils.runAndReadCodemod(testFile);
     await checkTsFile(testFile);
     assertEquals(result, expectedOutput);
   } finally {
@@ -670,7 +670,7 @@ function checkFileSize(size: number): string {
 }`;
 
     await utils.createTestFile(testFile, originalContent);
-    const result = await utils.runCodemodAndSnapshot(testFile);
+    const result = await utils.runAndReadCodemod(testFile);
     console.log(result);
     await checkTsFile(testFile);
     assertEquals(result, "todo");
@@ -687,7 +687,7 @@ Deno.test("comprehensive enum transformation - full sample", async () => {
     const sampleContent = await Deno.readTextFile("spec/comprehensive.in.ts");
 
     await utils.createTestFile(testFile, sampleContent);
-    const result = await utils.runCodemodAndSnapshot(testFile);
+    const result = await utils.runAndReadCodemod(testFile);
     await checkTsFile(testFile);
     await Deno.writeTextFile("tmp/out.ts", result);
     assertEquals(result, await Deno.readTextFile("spec/comprehensive.out.ts"));
@@ -753,7 +753,7 @@ function handleThemeChange(newTheme: Theme): void {
 }`;
 
       await utils.createTestFile(testFile, originalContent);
-      const result = await utils.runCodemodAndSnapshot(testFile);
+      const result = await utils.runAndReadCodemod(testFile);
       await checkTsFile(testFile);
       assertEquals(result, "todo");
     } finally {
@@ -819,7 +819,7 @@ const isDevelopment = logger['env'] === Environment.Development;
 logger.error(\`Critical error in \${Environment.Production} environment\`);`;
 
       await utils.createTestFile(testFile, originalContent);
-      const result = await utils.runCodemodAndSnapshot(testFile);
+      const result = await utils.runAndReadCodemod(testFile);
       await checkTsFile(testFile);
       assertEquals(result, "todo");
     } finally {
@@ -900,7 +900,7 @@ function checkEntityType<T extends EntityType>(
 }`;
 
     await utils.createTestFile(testFile, originalContent);
-    const result = await utils.runCodemodAndSnapshot(testFile);
+    const result = await utils.runAndReadCodemod(testFile);
     await checkTsFile(testFile);
     assertEquals(result, "todo");
   } finally {
@@ -925,7 +925,7 @@ Deno.test(
       );
 
       await utils.createTestFile(testFile, originalContent);
-      const result = await utils.runCodemodAndSnapshot(testFile);
+      const result = await utils.runAndReadCodemod(testFile);
       await checkTsFile(testFile);
       assertEquals(result, expectedOutput);
     } finally {
