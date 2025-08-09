@@ -2,5 +2,8 @@
   "deno.enable": true,
   "editor.defaultFormatter": "denoland.vscode-deno",
   "prettier.enable": false,
-  "biome.enabled": false
+  "biome.enabled": false,
+  "cSpell.words": [
+    "tsec"
+  ]
 }

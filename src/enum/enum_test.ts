@@ -1,4 +1,4 @@
-import { runCodemod } from "./main.ts";
+import { runCodemod } from "./enum.ts";
 import { spawn } from "node:child_process";
 import { assertEquals } from "jsr:@std/assert";
 
@@ -569,68 +569,12 @@ Deno.test("preserves comments", async () => {
   const testFile = "comments_test.ts";
 
   try {
-    const originalContent = `/**
- * Represents different user roles in the system
- */
-enum UserRole {
-  /** Regular user with basic permissions */
-  User = "user",
-  /** Moderator with elevated permissions */
-  Moderator = "moderator", 
-  /** Administrator with full access */
-  Admin = "admin"
-}
-
-// Default role for new users
-const DEFAULT_ROLE: UserRole = UserRole.User;
-
-/*
- * Permission check function
- */
-function hasPermission(role: UserRole, action: string): boolean {
-  switch (role) {
-    case UserRole.Admin:
-      return true; // Admin can do everything
-    case UserRole.Moderator:
-      return action !== "delete_user";
-    case UserRole.User:
-      return action === "read";
-    default:
-      return false;
-  }
-}`;
-
-    const expectedOutput = `/**
- * Represents different user roles in the system
- */
-const UserRole = {
-  /** Regular user with basic permissions */
-  User: "user",
-  /** Moderator with elevated permissions */
-  Moderator: "moderator",
-  /** Administrator with full access */
-  Admin: "admin",
-} as const;
-type UserRoleType = typeof UserRole[keyof typeof UserRole];
-
-// Default role for new users
-const DEFAULT_ROLE: UserRoleType = UserRole.User;
-
-/*
- * Permission check function
- */
-function hasPermission(role: UserRoleType, action: string): boolean {
-  switch (role) {
-    case UserRole.Admin:
-      return true; // Admin can do everything
-    case UserRole.Moderator:
-      return action !== "delete_user";
-    case UserRole.User:
-      return action === "read";
-    default:
-      return false;
-  }
-}`;
+    const originalContent = await Deno.readTextFile(
+      "src/enum/spec/comments.in.ts",
+    );
+    const expectedOutput = await Deno.readTextFile(
+      "src/enum/spec/comments.out.ts",
+    );
 
     await utils.createTestFile(testFile, originalContent);
     const result = await utils.runAndReadCodemod(testFile);
@@ -641,56 +585,23 @@ function hasPermission(role: UserRoleType, action: string): boolean {
   }
 });
 
-// TODO enable if computed needs to be supported
-Deno.test.ignore("handles edge case with computed enum values", async () => {
-  const utils = new TestUtils();
-  const testFile = "computed_enum_test.ts";
-
-  try {
-    const originalContent = `enum FileSize {
-  Small = 1024,
-  Medium = Small * 10,
-  Large = Medium * 10,
-  XLarge = Large * 10
-}
-
-enum Flags {
-  None = 0,
-  Read = 1 << 0,
-  Write = 1 << 1,
-  Execute = 1 << 2,
-  All = Read | Write | Execute
-}
-
-function checkFileSize(size: number): string {
-  if (size <= FileSize.Small) return "small";
-  if (size <= FileSize.Medium) return "medium";
-  if (size <= FileSize.Large) return "large";
-  return "xlarge";
-}`;
-
-    await utils.createTestFile(testFile, originalContent);
-    const result = await utils.runAndReadCodemod(testFile);
-    console.log(result);
-    await checkTsFile(testFile);
-    assertEquals(result, "todo");
-  } finally {
-    await utils.cleanup();
-  }
-});
-
 Deno.test("comprehensive enum transformation - full sample", async () => {
   const utils = new TestUtils();
   const testFile = "comprehensive_sample.ts";
 
   try {
-    const sampleContent = await Deno.readTextFile("spec/comprehensive.in.ts");
+    const sampleContent = await Deno.readTextFile(
+      "src/enum/spec/comprehensive.in.ts",
+    );
 
     await utils.createTestFile(testFile, sampleContent);
     const result = await utils.runAndReadCodemod(testFile);
     await checkTsFile(testFile);
     await Deno.writeTextFile("tmp/out.ts", result);
-    assertEquals(result, await Deno.readTextFile("spec/comprehensive.out.ts"));
+    assertEquals(
+      result,
+      await Deno.readTextFile("src/enum/spec/comprehensive.out.ts"),
+    );
   } finally {
     await utils.cleanup();
   }
@@ -704,10 +615,10 @@ Deno.test(
 
     try {
       const originalContent = await Deno.readTextFile(
-        "spec/object-patterns.in.ts",
+        "src/enum/spec/object-patterns.in.ts",
       );
       const expectedOutput = await Deno.readTextFile(
-        "spec/object-patterns.out.ts",
+        "src/enum/spec/object-patterns.out.ts",
       );
 
       await utils.createTestFile(testFile, originalContent);
@@ -728,10 +639,10 @@ Deno.test(
 
     try {
       const originalContent = await Deno.readTextFile(
-        "spec/template-literal.in.ts",
+        "src/enum/spec/template-literal.in.ts",
       );
       const expectedOutput = await Deno.readTextFile(
-        "spec/template-literal.out.ts",
+        "src/enum/spec/template-literal.out.ts",
       );
 
       await utils.createTestFile(testFile, originalContent);
@@ -744,86 +655,6 @@ Deno.test(
   },
 );
 
-Deno.test.ignore("enum usage with generics and type constraints", async () => {
-  const utils = new TestUtils();
-  const testFile = "generics_test.ts";
-
-  try {
-    const originalContent = `enum EntityType {
-  User = "user",
-  Group = "group", 
-  Organization = "org"
-}
-
-enum Permission {
-  Read = 1,
-  Write = 2,
-  Delete = 4,
-  Admin = 8
-}
-
-interface Entity<T extends EntityType> {
-  id: string;
-  type: T;
-  name: string;
-  permissions: Permission[];
-}
-
-type UserEntity = Entity<EntityType.User>;
-type GroupEntity = Entity<EntityType.Group>;
-
-class EntityManager<T extends EntityType> {
-  private entities: Map<string, Entity<T>> = new Map();
-
-  create<K extends T>(type: K, id: string, name: string): Entity<K> {
-    const entity: Entity<K> = {
-      id,
-      type,
-      name,
-      permissions: [Permission.Read]
-    };
-    
-    this.entities.set(id, entity as Entity<T>);
-    return entity;
-  }
-
-  hasPermission(id: string, permission: Permission): boolean {
-    const entity = this.entities.get(id);
-    return entity?.permissions.includes(permission) ?? false;
-  }
-
-  grantPermission(id: string, permission: Permission): void {
-    const entity = this.entities.get(id);
-    if (entity && !entity.permissions.includes(permission)) {
-      entity.permissions.push(permission);
-    }
-  }
-}
-
-function createUserManager(): EntityManager<EntityType.User> {
-  return new EntityManager<EntityType.User>();
-}
-
-const userManager = createUserManager();
-const user = userManager.create(EntityType.User, "u1", "John Doe");
-
-userManager.grantPermission("u1", Permission.Write | Permission.Delete);
-
-function checkEntityType<T extends EntityType>(
-  entity: Entity<T>
-): entity is Entity<EntityType.User> {
-  return entity.type === EntityType.User;
-}`;
-
-    await utils.createTestFile(testFile, originalContent);
-    const result = await utils.runAndReadCodemod(testFile);
-    await checkTsFile(testFile);
-    assertEquals(result, "todo");
-  } finally {
-    await utils.cleanup();
-  }
-});
-
 Deno.test(
   "enum usage with arrays, maps and complex data structures",
   async () => {
@@ -832,11 +663,11 @@ Deno.test(
 
     try {
       const originalContent = await Deno.readTextFile(
-        "spec/data-structures.in.ts",
+        "src/enum/spec/data-structures.in.ts",
       );
 
       const expectedOutput = await Deno.readTextFile(
-        "spec/data-structures.out.ts",
+        "src/enum/spec/data-structures.out.ts",
       );
 
       await utils.createTestFile(testFile, originalContent);
