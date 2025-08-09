@@ -78,53 +78,6 @@ function handleMixed(value: MixedEnumType): string {
 }'
 `;
 
-snapshot[`converts multiple enums in single file 1`] = `
-'const Color = {
-  Red: "red",
-  Blue: "blue"
-} as const;
-type ColorType = typeof Color[keyof typeof Color];
-
-const Status = {
-  Active: 1,
-  Inactive: 0
-} as const;
-type StatusType = typeof Status[keyof typeof Status];
-
-const Priority = {
-  Low: 0,
-  Medium: 1,
-  High: 2
-} as const;
-type PriorityType = typeof Priority[keyof typeof Priority];
-
-interface Task {
-  color: ColorType;
-  status: StatusType;
-  priority: PriorityType;
-}
-
-function createTask(): Task {
-  return {
-    color: Color.Red,
-    status: Status.Active,
-    priority: Priority.High
-  };
-}
-
-class TaskManager {
-  private tasks: Task[] = [];
-  
-  addTask(color: ColorType = Color.Blue): void {
-    this.tasks.push({
-      color,
-      status: Status.Pending,
-      priority: Priority.Medium
-    });
-  }
-}'
-`;
-
 snapshot[`preserves enum usage in complex scenarios 1`] = `
 'const ApiEndpoint = {
   Users: "/api/users",
@@ -250,28 +203,353 @@ function hasPermission(role: UserRoleType, action: string): boolean {
 }'
 `;
 
-snapshot[`handles edge case with computed enum values 1`] = `
-'const FileSize = {
-  Small: 1024,
-  Medium: Small * 10,
-  Large: Medium * 10,
-  XLarge: Large * 10
+snapshot[`comprehensive enum transformation - full sample 1`] = `
+'const Color = {
+  Red: "red",
+  Green: "green",
+  Blue: "blue"
 } as const;
-type FileSizeType = typeof FileSize[keyof typeof FileSize];
+type ColorType = typeof Color[keyof typeof Color];
 
-const Flags = {
-  None: 0,
-  Read: 1 << 0,
-  Write: 1 << 1,
-  Execute: 1 << 2,
-  All: Read | Write | Execute
+const Status = {
+  Pending: 0,
+  Active: 1,
+  Inactive: 2
 } as const;
-type FlagsType = typeof Flags[keyof typeof Flags];
+type StatusType = typeof Status[keyof typeof Status];
 
-function checkFileSize(size: number): string {
-  if (size <= FileSize.Small) return "small";
-  if (size <= FileSize.Medium) return "medium";
-  if (size <= FileSize.Large) return "large";
-  return "xlarge";
+const Direction = {
+  North: "NORTH",
+  South: "SOUTH",
+  East: "EAST",
+  West: "WEST"
+} as const;
+type DirectionType = typeof Direction[keyof typeof Direction];
+
+const Priority = {
+  Low: 0,
+  Medium: 1,
+  High: 2,
+  Critical: "CRITICAL"
+} as const;
+type PriorityType = typeof Priority[keyof typeof Priority];
+
+function _getColorName(color: ColorType): string {
+  return color;
+}
+
+function _getStatusText(status: StatusType): string {
+  switch (status) {
+    case Status.Pending:
+      return "Pending";
+    case Status.Active:
+      return "Active";
+    case Status.Inactive:
+      return "Inactive";
+    default:
+      return "Unknown";
+  }
+}
+
+interface User {
+  id: number;
+  name: string;
+  status: StatusType;
+  favoriteColor: ColorType;
+}
+
+class Navigation {
+  private currentDirection: DirectionType = Direction.North;
+
+  turnLeft(): void {
+    switch (this.currentDirection) {
+      case Direction.North:
+        this.currentDirection = Direction.West;
+        break;
+      case Direction.West:
+        this.currentDirection = Direction.South;
+        break;
+      case Direction.South:
+        this.currentDirection = Direction.East;
+        break;
+      case Direction.East:
+        this.currentDirection = Direction.North;
+        break;
+    }
+  }
+
+  getDirection(): DirectionType {
+    return this.currentDirection;
+  }
+}
+
+type TaskPriority = Extract<PriorityType, typeof Priority.Low> | Extract<PriorityType, typeof Priority.Medium> | Extract<PriorityType, typeof Priority.High>;
+
+function processTask(priority: TaskPriority): void {
+  console.log(\`Processing task with priority: \${priority}\`);
+}
+
+function _handleLowPriority(p: Extract<PriorityType, typeof Priority.Low>): void {
+  console.log(\`Handling low priority task: \${p}\`);
+}
+
+const _allColors: ColorType[] = [Color.Red, Color.Green, Color.Blue];
+
+const _colorMap: Record<ColorType, string> = {
+  [Color.Red]: "#FF0000",
+  [Color.Green]: "#00FF00",
+  [Color.Blue]: "#0000FF",
+};
+
+function _createEnumArray<T extends string>(enumObj: Record<string, T>): T[] {
+  return Object.values(enumObj);
+}
+
+const _user: User = {
+  id: 1,
+  name: "John",
+  status: Status.Active,
+  favoriteColor: Color.Blue,
+};
+
+const navigation = new Navigation();
+navigation.turnLeft();
+console.log(navigation.getDirection());
+
+processTask(Priority.High);
+
+export { Color, Status, Direction, Priority };
+export type { User, TaskPriority };'
+`;
+
+snapshot[`enum usage in destructuring and object patterns 1`] = `
+'const Theme = {
+  Light: "light",
+  Dark: "dark",
+  Auto: "auto"
+} as const;
+type ThemeType = typeof Theme[keyof typeof Theme];
+
+const Size = {
+  Small: "sm",
+  Medium: "md",
+  Large: "lg"
+} as const;
+type SizeType = typeof Size[keyof typeof Size];
+
+interface ComponentProps {
+  theme: ThemeType;
+  size: SizeType;
+  disabled?: boolean;
+}
+
+function createComponent({ 
+  theme = Theme.Light, 
+  size = Size.Medium, 
+  disabled = false 
+}: Partial<ComponentProps> = {}): ComponentProps {
+  return { theme, size, disabled };
+}
+
+const config = {
+  defaultTheme: Theme.Dark,
+  availableSizes: [Size.Small, Size.Medium, Size.Large],
+  themeColors: {
+    [Theme.Light]: "#ffffff",
+    [Theme.Dark]: "#000000",
+    [Theme.Auto]: "inherit"
+  }
+};
+
+const { defaultTheme, availableSizes } = config;
+
+function handleThemeChange(newTheme: ThemeType): void {
+  const themes: Record<ThemeType, () => void> = {
+    [Theme.Light]: () => console.log("Switching to light theme"),
+    [Theme.Dark]: () => console.log("Switching to dark theme"), 
+    [Theme.Auto]: () => console.log("Using system theme")
+  };
+  
+  themes[newTheme]?.();
 }'
+`;
+
+snapshot[`enum usage in template literals and conditionals 1`] = `
+"const LogLevel = {
+  Debug: 0,
+  Info: 1,
+  Warning: 2,
+  Error: 3
+} as const;
+type LogLevelType = typeof LogLevel[keyof typeof LogLevel];
+
+const Environment = {
+  Development: \\"dev\\",
+  Staging: \\"staging\\",
+  Production: \\"prod\\"
+} as const;
+type EnvironmentType = typeof Environment[keyof typeof Environment];
+
+class Logger {
+  constructor(
+    private level: LogLevelType = LogLevel.Info,
+    private env: EnvironmentType = Environment.Development
+  ) {}
+
+  log(level: LogLevelType, message: string): void {
+    if (level >= this.level) {
+      const prefix = \`[\${Environment[this.env] || this.env}][\${LogLevel[level]}]\`;
+      console.log(\`\${prefix} \${message}\`);
+    }
+  }
+
+  debug(msg: string) { this.log(LogLevel.Debug, msg); }
+  info(msg: string) { this.log(LogLevel.Info, msg); }
+  warn(msg: string) { this.log(LogLevel.Warning, msg); }
+  error(msg: string) { this.log(LogLevel.Error, msg); }
+}
+
+function getLogLevelName(level: LogLevelType): string {
+  return level === LogLevel.Debug ? \\"Debug Mode\\" :
+         level === LogLevel.Info ? \\"Information\\" :
+         level === LogLevel.Warning ? \\"Warning!\\" :
+         level === LogLevel.Error ? \\"ERROR!\\" : \\"Unknown\\";
+}
+
+const logger = new Logger(
+  LogLevel.Warning, 
+  Environment.Production
+);
+
+const isProduction = logger['env'] === Environment.Production;
+const isDevelopment = logger['env'] === Environment.Development;
+
+logger.error(\`Critical error in \${Environment.Production} environment\`);"
+`;
+
+snapshot[`enum usage with arrays, maps and complex data structures 1`] = `
+\`const HttpStatus = {
+  OK: 200,
+  Created: 201,
+  BadRequest: 400,
+  Unauthorized: 401,
+  NotFound: 404,
+  InternalServerError: 500
+} as const;
+type HttpStatusType = typeof HttpStatus[keyof typeof HttpStatus];
+
+const HttpMethod = {
+  GET: "GET",
+  POST: "POST",
+  PUT: "PUT",
+  DELETE: "DELETE",
+  PATCH: "PATCH"
+} as const;
+type HttpMethodType = typeof HttpMethod[keyof typeof HttpMethod];
+
+type ApiEndpoint = {
+  path: string;
+  method: HttpMethodType;
+  expectedStatus: HttpStatusType[];
+};
+
+const endpoints: Map<string, ApiEndpoint> = new Map([
+  ["getUser", { 
+    path: "/users/:id", 
+    method: HttpMethod.GET, 
+    expectedStatus: [HttpStatus.OK, HttpStatus.NotFound] 
+  }],
+  ["createUser", { 
+    path: "/users", 
+    method: HttpMethod.POST, 
+    expectedStatus: [HttpStatus.Created, HttpStatus.BadRequest] 
+  }],
+  ["updateUser", { 
+    path: "/users/:id", 
+    method: HttpMethod.PUT, 
+    expectedStatus: [HttpStatus.OK, HttpStatus.NotFound, HttpStatus.BadRequest] 
+  }],
+  ["deleteUser", { 
+    path: "/users/:id", 
+    method: HttpMethod.DELETE, 
+    expectedStatus: [HttpStatus.OK, HttpStatus.NotFound] 
+  }]
+]);
+
+const statusMessages: Record<HttpStatusType, string> = {
+  [HttpStatus.OK]: "Request successful",
+  [HttpStatus.Created]: "Resource created successfully",
+  [HttpStatus.BadRequest]: "Invalid request data",
+  [HttpStatus.Unauthorized]: "Authentication required",
+  [HttpStatus.NotFound]: "Resource not found", 
+  [HttpStatus.InternalServerError]: "Server error occurred"
+};
+
+const allowedMethods: Set<HttpMethodType> = new Set([
+  HttpMethod.GET,
+  HttpMethod.POST,
+  HttpMethod.PUT,
+  HttpMethod.DELETE
+]);
+
+function validateResponse(status: HttpStatusType, method: HttpMethodType): boolean {
+  const successStatuses = [HttpStatus.OK, HttpStatus.Created];
+  const errorStatuses = [
+    HttpStatus.BadRequest, 
+    HttpStatus.Unauthorized, 
+    HttpStatus.NotFound,
+    HttpStatus.InternalServerError
+  ];
+  
+  return [...successStatuses, ...errorStatuses].includes(status) && 
+         allowedMethods.has(method);
+}
+
+class ApiClient {
+  private requestHistory: Array<{
+    method: HttpMethodType;
+    status: HttpStatusType;
+    timestamp: Date;
+  }> = [];
+
+  private async makeRequest(method: HttpMethodType): Promise<HttpStatusType> {
+    // Simulate API call
+    const statuses = Object.values(HttpStatus).filter(
+      (s): s is HttpStatusType => typeof s === 'number'
+    );
+    const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+    
+    this.requestHistory.push({
+      method,
+      status: randomStatus,
+      timestamp: new Date()
+    });
+    
+    return randomStatus;
+  }
+
+  async get(): Promise<HttpStatusType> { 
+    return this.makeRequest(HttpMethod.GET); 
+  }
+  
+  async post(): Promise<HttpStatusType> { 
+    return this.makeRequest(HttpMethod.POST); 
+  }
+
+  getRequestStats(): Record<HttpMethodType, number> {
+    const stats: Record<HttpMethodType, number> = {
+      [HttpMethod.GET]: 0,
+      [HttpMethod.POST]: 0,
+      [HttpMethod.PUT]: 0,
+      [HttpMethod.DELETE]: 0,
+      [HttpMethod.PATCH]: 0
+    };
+
+    for (const request of this.requestHistory) {
+      stats[request.method]++;
+    }
+
+    return stats;
+  }
+}\`
 `;

@@ -90,14 +90,9 @@ function runCodemod(filePath: string): void {
   const sourceFile = project.addSourceFileAtPath(filePath);
   // Get all enums before conversion and store their names
   const enums = sourceFile.getEnums();
-  const enumNames = enums
-    .map((enumDecl) => {
-      console.log("h", enumDecl.getText());
-      return enumDecl.getName();
-    })
-    .filter(Boolean);
+  const enumNames = enums.map((enumDecl) => enumDecl.getName()).filter(Boolean);
 
-  console.log(`Found enums: ${enumNames.join(", ")}`);
+  // console.log(`Found enums: ${enumNames.join(", ")}`);
 
   enums.forEach(convertEnumToObject);
 
