@@ -823,7 +823,6 @@ function checkEntityType<T extends EntityType>(
     await utils.cleanup();
   }
 });
-// TODO LAZINESS END
 
 Deno.test(
   "enum usage with arrays, maps and complex data structures",
