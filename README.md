@@ -1,7 +1,7 @@
 # TypeScript Erasable Codemod
 
 **Disclaimer: This is under very initial development and is not ready at all for
-use. Contributions and feedback are very welcome still though 🙌**
+use. Contributions and feedback are very welcome though 🙌**
 
 Hi! This is `tsec`, the codemod tool for automatically migrating your code to be
 compatible with TypeScript's
