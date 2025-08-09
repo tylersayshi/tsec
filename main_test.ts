@@ -1,332 +1,404 @@
-import { assertEquals, assertExists } from "@std/assert";
+import { assertSnapshot } from "jsr:@std/testing/snapshot";
 import { runCodemod } from "./main.ts";
 
-// Test helper function to read file content
-async function readFileContent(filePath: string): Promise<string> {
-  return await Deno.readTextFile(filePath);
-}
+/**
+ * Test utilities for codemod testing with proper cleanup
+ * @example
+ * const utils = new TestUtils();
+ * await utils.createTestFile("test.ts", "enum Color { Red }");
+ */
+class TestUtils {
+  private tempFiles = new Set<string>();
 
-// Test helper function to write file content
-async function writeFileContent(
-  filePath: string,
-  content: string
-): Promise<void> {
-  await Deno.writeTextFile(filePath, content);
-}
-
-// Test helper function to create a backup of the sample file
-async function backupSampleFile(): Promise<void> {
-  try {
-    const content = await readFileContent("sample.ts");
-    await writeFileContent("sample_backup.ts", content);
-  } catch {
-    // File doesn't exist, ignore
+  async createTestFile(filePath: string, content: string): Promise<void> {
+    await Deno.writeTextFile(filePath, content);
+    this.tempFiles.add(filePath);
   }
-}
 
-// Test helper function to restore the sample file
-async function restoreSampleFile(): Promise<void> {
-  try {
-    const content = await readFileContent("sample_backup.ts");
-    await writeFileContent("sample.ts", content);
-  } catch {
-    // Backup doesn't exist, ignore
+  async readTestFile(filePath: string): Promise<string> {
+    return await Deno.readTextFile(filePath);
   }
-}
 
-// Backup original file
-await backupSampleFile();
+  async runCodemodAndSnapshot(filePath: string): Promise<string> {
+    runCodemod(filePath);
+    return await this.readTestFile(filePath);
+  }
 
-try {
-  // Read original content
-  const originalContent = await readFileContent("sample.ts");
-  await writeFileContent("sample_backup.ts", originalContent);
-
-  // Run the codemod
-  runCodemod("sample.ts");
-
-  // Read converted content
-  const convertedContent = await readFileContent("sample.ts");
-  await writeFileContent("sample_converted.ts", convertedContent);
-
-  // Verify the conversion
-  Deno.test("Color enum should be converted to object", () => {
-    assertEquals(
-      convertedContent.includes("const Color = {") &&
-        convertedContent.includes(
-          "type Color = typeof Color[keyof typeof Color]"
-        ),
-      true,
-      "Color enum should be converted to object"
-    );
-  });
-
-  Deno.test("Status enum should be converted to object", () => {
-    assertEquals(
-      convertedContent.includes("const Status = {") &&
-        convertedContent.includes(
-          "type Status = typeof Status[keyof typeof Status]"
-        ),
-      true,
-      "Status enum should be converted to object"
-    );
-  });
-
-  Deno.test("Direction enum should be converted to object", () => {
-    assertEquals(
-      convertedContent.includes("const Direction = {") &&
-        convertedContent.includes(
-          "type Direction = typeof Direction[keyof typeof Direction]"
-        ),
-      true,
-      "Direction enum should be converted to object"
-    );
-  });
-
-  Deno.test("Priority enum should be converted to object", () => {
-    assertEquals(
-      convertedContent.includes("const Priority = {") &&
-        convertedContent.includes(
-          "type Priority = typeof Priority[keyof typeof Priority]"
-        ),
-      true,
-      "Priority enum should be converted to object"
-    );
-  });
-
-  Deno.test("No enum declarations should remain", () => {
-    console.log(convertedContent);
-    assertEquals(
-      !convertedContent.includes("enum "),
-      true,
-      "No enum declarations should remain"
-    );
-  });
-
-  Deno.test("Object properties should be preserved", () => {
-    assertEquals(
-      convertedContent.includes('Red: "red"') &&
-        convertedContent.includes("Pending: 0") &&
-        convertedContent.includes('North: "NORTH"'),
-      true,
-      "Object properties should be preserved"
-    );
-  });
-
-  Deno.test("Type references should still work", () => {
-    assertEquals(
-      convertedContent.includes(
-        "function _getColorName(color: Color): string"
-      ) && convertedContent.includes("status: Status"),
-      true,
-      "Type references should still work"
-    );
-  });
-
-  Deno.test("Value references should still work", () => {
-    assertEquals(
-      convertedContent.includes("Color.Red") &&
-        convertedContent.includes("Status.Active") &&
-        convertedContent.includes("Direction.North"),
-      true,
-      "Value references should still work"
-    );
-  });
-
-  // Additional verification: check that the converted code is syntactically valid
-
-  // Check for object declarations
-  const objectDeclarations = (convertedContent.match(/const \w+ = \{/g) || [])
-    .length;
-  assertEquals(
-    objectDeclarations,
-    4,
-    "Expected 4 object declarations (one for each enum)"
-  );
-
-  // Check for type definitions
-  const typeDefinitions = (
-    convertedContent.match(/type \w+ = typeof \w+\[keyof typeof \w+\]/g) || []
-  ).length;
-  assertEquals(
-    typeDefinitions,
-    4,
-    "Expected 4 type definitions (one for each enum)"
-  );
-
-  // Check that all enum value references are preserved
-  const enumValueReferences = (
-    convertedContent.match(/\w+\.\w+/g) || []
-  ).filter(
-    (ref) =>
-      ref.includes("Color.") ||
-      ref.includes("Status.") ||
-      ref.includes("Direction.") ||
-      ref.includes("Priority.")
-  ).length;
-  assertExists(
-    enumValueReferences > 0,
-    "Expected to find enum value references in the converted code"
-  );
-} finally {
-  // Restore original file
-  await restoreSampleFile();
-}
-
-Deno.test("SimpleEnum should be converted with numeric values", async () => {
-  const edgeCaseContent = `
-enum SimpleEnum {
-  A,
-  B,
-  C
-}
-`;
-  await writeFileContent("edge_cases.ts", edgeCaseContent);
-  try {
-    runCodemod("edge_cases.ts");
-    const convertedContent = await readFileContent("edge_cases.ts");
-    assertEquals(
-      convertedContent.includes("const SimpleEnum = {") &&
-        convertedContent.includes("A: 0"),
-      true,
-      "SimpleEnum should be converted with numeric values"
-    );
-  } finally {
-    try {
-      await Deno.remove("edge_cases.ts");
-    } catch {
-      // File doesn't exist, ignore
+  async cleanup(): Promise<void> {
+    for (const file of this.tempFiles) {
+      try {
+        await Deno.remove(file);
+      } catch {
+        // Ignore if file doesn't exist
+      }
     }
+    this.tempFiles.clear();
+  }
+}
+
+Deno.test("converts string enum to object", async (t) => {
+  const utils = new TestUtils();
+  const testFile = "string_enum_test.ts";
+
+  try {
+    const originalContent = `enum Color {
+  Red = "red",
+  Blue = "blue",
+  Green = "green"
+}
+
+function getColorName(color: Color): string {
+  return color === Color.Red ? "Red color" : "Other color";
+}
+
+const userColor: Color = Color.Blue;`;
+
+    await utils.createTestFile(testFile, originalContent);
+    const result = await utils.runCodemodAndSnapshot(testFile);
+    await assertSnapshot(t, result);
+  } finally {
+    await utils.cleanup();
   }
 });
 
-Deno.test("StringEnum should be converted with string values", async () => {
-  const edgeCaseContent = `
-enum StringEnum {
-  X = "x",
-  Y = "y"
-}
-`;
-  await writeFileContent("edge_cases.ts", edgeCaseContent);
+Deno.test("converts numeric enum to object", async (t) => {
+  const utils = new TestUtils();
+  const testFile = "numeric_enum_test.ts";
+
   try {
-    runCodemod("edge_cases.ts");
-    const convertedContent = await readFileContent("edge_cases.ts");
-    assertEquals(
-      convertedContent.includes("const StringEnum = {") &&
-        convertedContent.includes('X: "x"'),
-      true,
-      "StringEnum should be converted with string values"
-    );
+    const originalContent = `enum Status {
+  Pending = 0,
+  Active = 1,
+  Inactive = 2
+}
+
+interface User {
+  name: string;
+  status: Status;
+}
+
+function createUser(name: string): User {
+  return {
+    name,
+    status: Status.Pending
+  };
+}`;
+
+    await utils.createTestFile(testFile, originalContent);
+    const result = await utils.runCodemodAndSnapshot(testFile);
+    await assertSnapshot(t, result);
   } finally {
-    try {
-      await Deno.remove("edge_cases.ts");
-    } catch {
-      // File doesn't exist, ignore
-    }
+    await utils.cleanup();
   }
 });
 
-Deno.test("MixedEnum should be converted with mixed values", async () => {
-  const edgeCaseContent = `
-enum MixedEnum {
-  One = 1,
-  Two = "two",
-  Three = 3
-}
-`;
-  await writeFileContent("edge_cases.ts", edgeCaseContent);
+Deno.test("converts auto-incrementing enum to object", async (t) => {
+  const utils = new TestUtils();
+  const testFile = "auto_enum_test.ts";
+
   try {
-    runCodemod("edge_cases.ts");
-    const convertedContent = await readFileContent("edge_cases.ts");
-    assertEquals(
-      convertedContent.includes("const MixedEnum = {") &&
-        convertedContent.includes("One: 1") &&
-        convertedContent.includes('Two: "two"'),
-      true,
-      "MixedEnum should be converted with mixed values"
-    );
+    const originalContent = `enum Direction {
+  North,
+  South,
+  East,
+  West
+}
+
+const compass: Direction[] = [
+  Direction.North,
+  Direction.South,
+  Direction.East,
+  Direction.West
+];`;
+
+    await utils.createTestFile(testFile, originalContent);
+    const result = await utils.runCodemodAndSnapshot(testFile);
+    await assertSnapshot(t, result);
   } finally {
-    try {
-      await Deno.remove("edge_cases.ts");
-    } catch {
-      // File doesn't exist, ignore
-    }
+    await utils.cleanup();
   }
 });
 
-Deno.test("Type references should be preserved in edge cases", async () => {
-  const edgeCaseContent = `
-enum SimpleEnum {
-  A,
-  B,
-  C
-}
-enum StringEnum {
-  X = "x",
-  Y = "y"
-}
-function testEdgeCases() {
-  const simple: SimpleEnum = SimpleEnum.A;
-  const string: StringEnum = StringEnum.X;
-  return { simple, string };
-}
-`;
-  await writeFileContent("edge_cases.ts", edgeCaseContent);
+Deno.test("converts mixed value enum to object", async (t) => {
+  const utils = new TestUtils();
+  const testFile = "mixed_enum_test.ts";
+
   try {
-    runCodemod("edge_cases.ts");
-    const convertedContent = await readFileContent("edge_cases.ts");
-    assertEquals(
-      convertedContent.includes("const simple: SimpleEnum") &&
-        convertedContent.includes("const string: StringEnum"),
-      true,
-      "Type references should be preserved"
-    );
+    const originalContent = `enum MixedEnum {
+  First = 1,
+  Second = "second",
+  Third = 3,
+  Fourth = "fourth"
+}
+
+function handleMixed(value: MixedEnum): string {
+  switch (value) {
+    case MixedEnum.First:
+      return "Number one";
+    case MixedEnum.Second:
+      return "String second";
+    case MixedEnum.Third:
+      return "Number three";
+    case MixedEnum.Fourth:
+      return "String fourth";
+    default:
+      return "Unknown";
+  }
+}`;
+
+    await utils.createTestFile(testFile, originalContent);
+    const result = await utils.runCodemodAndSnapshot(testFile);
+    await assertSnapshot(t, result);
   } finally {
-    try {
-      await Deno.remove("edge_cases.ts");
-    } catch {}
+    await utils.cleanup();
   }
 });
 
-Deno.test("Value references should be preserved in edge cases", async () => {
-  const edgeCaseContent = `
-enum SimpleEnum {
-  A,
-  B,
-  C
-}
-enum StringEnum {
-  X = "x",
-  Y = "y"
-}
-enum MixedEnum {
-  One = 1,
-  Two = "two",
-  Three = 3
-}
-function testEdgeCases() {
-  const simple: SimpleEnum = SimpleEnum.A;
-  const string: StringEnum = StringEnum.X;
-  const mixed: MixedEnum = MixedEnum.Two;
-  return { simple, string, mixed };
-}
-`;
-  await writeFileContent("edge_cases.ts", edgeCaseContent);
+Deno.test("converts multiple enums in single file", async (t) => {
+  const utils = new TestUtils();
+  const testFile = "multiple_enums_test.ts";
+
   try {
-    runCodemod("edge_cases.ts");
-    const convertedContent = await readFileContent("edge_cases.ts");
-    assertEquals(
-      convertedContent.includes("SimpleEnum.A") &&
-        convertedContent.includes("StringEnum.X") &&
-        convertedContent.includes("MixedEnum.Two"),
-      true,
-      "Value references should be preserved"
-    );
+    const originalContent = `enum Color {
+  Red = "red",
+  Blue = "blue"
+}
+
+enum Status {
+  Active = 1,
+  Inactive = 0
+}
+
+enum Priority {
+  Low,
+  Medium,
+  High
+}
+
+interface Task {
+  color: Color;
+  status: Status;
+  priority: Priority;
+}
+
+function createTask(): Task {
+  return {
+    color: Color.Red,
+    status: Status.Active,
+    priority: Priority.High
+  };
+}
+
+class TaskManager {
+  private tasks: Task[] = [];
+  
+  addTask(color: Color = Color.Blue): void {
+    this.tasks.push({
+      color,
+      status: Status.Pending,
+      priority: Priority.Medium
+    });
+  }
+}`;
+
+    await utils.createTestFile(testFile, originalContent);
+    const result = await utils.runCodemodAndSnapshot(testFile);
+    await assertSnapshot(t, result);
   } finally {
+    await utils.cleanup();
+  }
+});
+
+Deno.test("preserves enum usage in complex scenarios", async (t) => {
+  const utils = new TestUtils();
+  const testFile = "complex_usage_test.ts";
+
+  try {
+    const originalContent = `enum ApiEndpoint {
+  Users = "/api/users",
+  Posts = "/api/posts",
+  Comments = "/api/comments"
+}
+
+enum HttpMethod {
+  GET = "GET",
+  POST = "POST",
+  PUT = "PUT",
+  DELETE = "DELETE"
+}
+
+enum ResponseStatus {
+  Success = 200,
+  NotFound = 404,
+  ServerError = 500
+}
+
+interface ApiRequest {
+  endpoint: ApiEndpoint;
+  method: HttpMethod;
+}
+
+interface ApiResponse<T = unknown> {
+  status: ResponseStatus;
+  data?: T;
+  error?: string;
+}
+
+class ApiClient {
+  private baseUrl: string;
+
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
+
+  async makeRequest<T>(
+    endpoint: ApiEndpoint,
+    method: HttpMethod = HttpMethod.GET
+  ): Promise<ApiResponse<T>> {
+    const url = \`\${this.baseUrl}\${endpoint}\`;
+    
     try {
-      await Deno.remove("edge_cases.ts");
-    } catch {
-      // File doesn't exist, ignore
+      const response = await fetch(url, { method });
+      
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          status: ResponseStatus.Success,
+          data
+        };
+      } else {
+        return {
+          status: response.status === 404 ? ResponseStatus.NotFound : ResponseStatus.ServerError,
+          error: \`Request failed with status \${response.status}\`
+        };
+      }
+    } catch (error) {
+      return {
+        status: ResponseStatus.ServerError,
+        error: error.message
+      };
     }
+  }
+}
+
+// Usage examples
+const client = new ApiClient("https://api.example.com");
+const usersRequest: ApiRequest = {
+  endpoint: ApiEndpoint.Users,
+  method: HttpMethod.GET
+};`;
+
+    await utils.createTestFile(testFile, originalContent);
+    const result = await utils.runCodemodAndSnapshot(testFile);
+    await assertSnapshot(t, result);
+  } finally {
+    await utils.cleanup();
+  }
+});
+
+Deno.test("handles const enum conversion", async (t) => {
+  const utils = new TestUtils();
+  const testFile = "const_enum_test.ts";
+
+  try {
+    const originalContent = `const enum LogLevel {
+  Debug = 0,
+  Info = 1,
+  Warn = 2,
+  Error = 3
+}
+
+function log(level: LogLevel, message: string): void {
+  if (level >= LogLevel.Info) {
+    console.log(\`[\${LogLevel[level]}] \${message}\`);
+  }
+}
+
+log(LogLevel.Error, "Something went wrong");`;
+
+    await utils.createTestFile(testFile, originalContent);
+    const result = await utils.runCodemodAndSnapshot(testFile);
+    await assertSnapshot(t, result);
+  } finally {
+    await utils.cleanup();
+  }
+});
+
+Deno.test("preserves comments and formatting context", async (t) => {
+  const utils = new TestUtils();
+  const testFile = "comments_test.ts";
+
+  try {
+    const originalContent = `/**
+ * Represents different user roles in the system
+ */
+enum UserRole {
+  /** Regular user with basic permissions */
+  User = "user",
+  /** Moderator with elevated permissions */
+  Moderator = "moderator", 
+  /** Administrator with full access */
+  Admin = "admin"
+}
+
+// Default role for new users
+const DEFAULT_ROLE: UserRole = UserRole.User;
+
+/*
+ * Permission check function
+ */
+function hasPermission(role: UserRole, action: string): boolean {
+  switch (role) {
+    case UserRole.Admin:
+      return true; // Admin can do everything
+    case UserRole.Moderator:
+      return action !== "delete_user";
+    case UserRole.User:
+      return action === "read";
+    default:
+      return false;
+  }
+}`;
+
+    await utils.createTestFile(testFile, originalContent);
+    const result = await utils.runCodemodAndSnapshot(testFile);
+    await assertSnapshot(t, result);
+  } finally {
+    await utils.cleanup();
+  }
+});
+
+Deno.test("handles edge case with computed enum values", async (t) => {
+  const utils = new TestUtils();
+  const testFile = "computed_enum_test.ts";
+
+  try {
+    const originalContent = `enum FileSize {
+  Small = 1024,
+  Medium = Small * 10,
+  Large = Medium * 10,
+  XLarge = Large * 10
+}
+
+enum Flags {
+  None = 0,
+  Read = 1 << 0,
+  Write = 1 << 1,
+  Execute = 1 << 2,
+  All = Read | Write | Execute
+}
+
+function checkFileSize(size: number): string {
+  if (size <= FileSize.Small) return "small";
+  if (size <= FileSize.Medium) return "medium";
+  if (size <= FileSize.Large) return "large";
+  return "xlarge";
+}`;
+
+    await utils.createTestFile(testFile, originalContent);
+    const result = await utils.runCodemodAndSnapshot(testFile);
+    await assertSnapshot(t, result);
+  } finally {
+    await utils.cleanup();
   }
 });

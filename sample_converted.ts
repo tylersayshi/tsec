@@ -1,34 +1,38 @@
-enum Color {
-  Red = "red",
-  Green = "green",
-  Blue = "blue",
-}
+const Color = {
+  Red: "red",
+  Green: "green",
+  Blue: "blue"
+} as const;
+type ColorType = typeof Color[keyof typeof Color];
 
-enum Status {
-  Pending = 0,
-  Active = 1,
-  Inactive = 2,
-}
+const Status = {
+  Pending: 0,
+  Active: 1,
+  Inactive: 2
+} as const;
+type StatusType = typeof Status[keyof typeof Status];
 
-enum Direction {
-  North = "NORTH",
-  South = "SOUTH",
-  East = "EAST",
-  West = "WEST",
-}
+const Direction = {
+  North: "NORTH",
+  South: "SOUTH",
+  East: "EAST",
+  West: "WEST"
+} as const;
+type DirectionType = typeof Direction[keyof typeof Direction];
 
-enum Priority {
-  Low = 0,
-  Medium = 1,
-  High = 2,
-  Critical = "CRITICAL",
-}
+const Priority = {
+  Low: 0,
+  Medium: 1,
+  High: 2,
+  Critical: "CRITICAL"
+} as const;
+type PriorityType = typeof Priority[keyof typeof Priority];
 
-function _getColorName(color: Color): string {
+function _getColorName(color: ColorType): string {
   return color;
 }
 
-function _getStatusText(status: Status): string {
+function _getStatusText(status: StatusType): string {
   switch (status) {
     case Status.Pending:
       return "Pending";
@@ -44,12 +48,12 @@ function _getStatusText(status: Status): string {
 interface User {
   id: number;
   name: string;
-  status: Status;
-  favoriteColor: Color;
+  status: StatusType;
+  favoriteColor: ColorType;
 }
 
 class Navigation {
-  private currentDirection: Direction = Direction.North;
+  private currentDirection: DirectionType = Direction.North;
 
   turnLeft(): void {
     switch (this.currentDirection) {
@@ -68,24 +72,24 @@ class Navigation {
     }
   }
 
-  getDirection(): Direction {
+  getDirection(): DirectionType {
     return this.currentDirection;
   }
 }
 
-type TaskPriority = Priority.Low | Priority.Medium | Priority.High;
+type TaskPriority = Extract<PriorityType, typeof Priority.Low> | Extract<PriorityType, typeof Priority.Medium> | Extract<PriorityType, typeof Priority.High>;
 
 function processTask(priority: TaskPriority): void {
   console.log(`Processing task with priority: ${priority}`);
 }
 
-function _handleLowPriority(p: Priority.Low): void {
+function _handleLowPriority(p: Extract<PriorityType, typeof Priority.Low>): void {
   console.log(`Handling low priority task: ${p}`);
 }
 
-const _allColors: Color[] = [Color.Red, Color.Green, Color.Blue];
+const _allColors: ColorType[] = [Color.Red, Color.Green, Color.Blue];
 
-const _colorMap: Record<Color, string> = {
+const _colorMap: Record<ColorType, string> = {
   [Color.Red]: "#FF0000",
   [Color.Green]: "#00FF00",
   [Color.Blue]: "#0000FF",

@@ -74,8 +74,7 @@ function updateEnumReferences(sourceFile: Node, enumNames: string[]): void {
       ) {
         const enumName = left.getText();
         const propertyName = right.getText();
-        // Check if this is a reference to a converted enum value
-        console.log({ enumName, propertyName });
+
         if (enumNames.includes(enumName)) {
           // Replace the type node with Extract<EnumType, 'Property'>
           typeNode.replaceWithText(
@@ -89,19 +88,20 @@ function updateEnumReferences(sourceFile: Node, enumNames: string[]): void {
 
 function runCodemod(filePath: string): void {
   const sourceFile = project.addSourceFileAtPath(filePath);
-
   // Get all enums before conversion and store their names
   const enums = sourceFile.getEnums();
-  const enumNames = enums.map((enumDecl) => enumDecl.getName()).filter(Boolean);
+  const enumNames = enums
+    .map((enumDecl) => {
+      console.log("h", enumDecl.getText());
+      return enumDecl.getName();
+    })
+    .filter(Boolean);
 
   console.log(`Found enums: ${enumNames.join(", ")}`);
 
-  // Convert all enums to objects
   enums.forEach(convertEnumToObject);
 
-  // Update references after conversion
   updateEnumReferences(sourceFile, enumNames);
-  // updateEnumValueReferences(sourceFile, enumNames);
 
   // Save the changes
   sourceFile.saveSync();

@@ -1,0 +1,277 @@
+export const snapshot = {};
+
+snapshot[`converts string enum to object 1`] = `
+'const Color = {
+  Red: "red",
+  Blue: "blue",
+  Green: "green"
+} as const;
+type ColorType = typeof Color[keyof typeof Color];
+
+function getColorName(color: ColorType): string {
+  return color === Color.Red ? "Red color" : "Other color";
+}
+
+const userColor: ColorType = Color.Blue;'
+`;
+
+snapshot[`converts numeric enum to object 1`] = `
+"const Status = {
+  Pending: 0,
+  Active: 1,
+  Inactive: 2
+} as const;
+type StatusType = typeof Status[keyof typeof Status];
+
+interface User {
+  name: string;
+  status: StatusType;
+}
+
+function createUser(name: string): User {
+  return {
+    name,
+    status: Status.Pending
+  };
+}"
+`;
+
+snapshot[`converts auto-incrementing enum to object 1`] = `
+"const Direction = {
+  North: 0,
+  South: 1,
+  East: 2,
+  West: 3
+} as const;
+type DirectionType = typeof Direction[keyof typeof Direction];
+
+const compass: DirectionType[] = [
+  Direction.North,
+  Direction.South,
+  Direction.East,
+  Direction.West
+];"
+`;
+
+snapshot[`converts mixed value enum to object 1`] = `
+'const MixedEnum = {
+  First: 1,
+  Second: "second",
+  Third: 3,
+  Fourth: "fourth"
+} as const;
+type MixedEnumType = typeof MixedEnum[keyof typeof MixedEnum];
+
+function handleMixed(value: MixedEnumType): string {
+  switch (value) {
+    case MixedEnum.First:
+      return "Number one";
+    case MixedEnum.Second:
+      return "String second";
+    case MixedEnum.Third:
+      return "Number three";
+    case MixedEnum.Fourth:
+      return "String fourth";
+    default:
+      return "Unknown";
+  }
+}'
+`;
+
+snapshot[`converts multiple enums in single file 1`] = `
+'const Color = {
+  Red: "red",
+  Blue: "blue"
+} as const;
+type ColorType = typeof Color[keyof typeof Color];
+
+const Status = {
+  Active: 1,
+  Inactive: 0
+} as const;
+type StatusType = typeof Status[keyof typeof Status];
+
+const Priority = {
+  Low: 0,
+  Medium: 1,
+  High: 2
+} as const;
+type PriorityType = typeof Priority[keyof typeof Priority];
+
+interface Task {
+  color: ColorType;
+  status: StatusType;
+  priority: PriorityType;
+}
+
+function createTask(): Task {
+  return {
+    color: Color.Red,
+    status: Status.Active,
+    priority: Priority.High
+  };
+}
+
+class TaskManager {
+  private tasks: Task[] = [];
+  
+  addTask(color: ColorType = Color.Blue): void {
+    this.tasks.push({
+      color,
+      status: Status.Pending,
+      priority: Priority.Medium
+    });
+  }
+}'
+`;
+
+snapshot[`preserves enum usage in complex scenarios 1`] = `
+'const ApiEndpoint = {
+  Users: "/api/users",
+  Posts: "/api/posts",
+  Comments: "/api/comments"
+} as const;
+type ApiEndpointType = typeof ApiEndpoint[keyof typeof ApiEndpoint];
+
+const HttpMethod = {
+  GET: "GET",
+  POST: "POST",
+  PUT: "PUT",
+  DELETE: "DELETE"
+} as const;
+type HttpMethodType = typeof HttpMethod[keyof typeof HttpMethod];
+
+const ResponseStatus = {
+  Success: 200,
+  NotFound: 404,
+  ServerError: 500
+} as const;
+type ResponseStatusType = typeof ResponseStatus[keyof typeof ResponseStatus];
+
+interface ApiRequest {
+  endpoint: ApiEndpointType;
+  method: HttpMethodType;
+}
+
+interface ApiResponse<T = unknown> {
+  status: ResponseStatusType;
+  data?: T;
+  error?: string;
+}
+
+class ApiClient {
+  private baseUrl: string;
+
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
+
+  async makeRequest<T>(
+    endpoint: ApiEndpointType,
+    method: HttpMethodType = HttpMethod.GET
+  ): Promise<ApiResponse<T>> {
+    const url = \`\${this.baseUrl}\${endpoint}\`;
+    
+    try {
+      const response = await fetch(url, { method });
+      
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          status: ResponseStatus.Success,
+          data
+        };
+      } else {
+        return {
+          status: response.status === 404 ? ResponseStatus.NotFound : ResponseStatus.ServerError,
+          error: \`Request failed with status \${response.status}\`
+        };
+      }
+    } catch (error) {
+      return {
+        status: ResponseStatus.ServerError,
+        error: error.message
+      };
+    }
+  }
+}
+
+// Usage examples
+const client = new ApiClient("https://api.example.com");
+const usersRequest: ApiRequest = {
+  endpoint: ApiEndpoint.Users,
+  method: HttpMethod.GET
+};'
+`;
+
+snapshot[`handles const enum conversion 1`] = `
+'const LogLevel = {
+  Debug: 0,
+  Info: 1,
+  Warn: 2,
+  Error: 3
+} as const;
+type LogLevelType = typeof LogLevel[keyof typeof LogLevel];
+
+function log(level: LogLevelType, message: string): void {
+  if (level >= LogLevel.Info) {
+    console.log(\`[\${LogLevel[level]}] \${message}\`);
+  }
+}
+
+log(LogLevel.Error, "Something went wrong");'
+`;
+
+snapshot[`preserves comments and formatting context 1`] = `
+'const UserRole = {
+  User: "user",
+  Moderator: "moderator",
+  Admin: "admin"
+} as const;
+type UserRoleType = typeof UserRole[keyof typeof UserRole];
+
+// Default role for new users
+const DEFAULT_ROLE: UserRoleType = UserRole.User;
+
+/*
+ * Permission check function
+ */
+function hasPermission(role: UserRoleType, action: string): boolean {
+  switch (role) {
+    case UserRole.Admin:
+      return true; // Admin can do everything
+    case UserRole.Moderator:
+      return action !== "delete_user";
+    case UserRole.User:
+      return action === "read";
+    default:
+      return false;
+  }
+}'
+`;
+
+snapshot[`handles edge case with computed enum values 1`] = `
+'const FileSize = {
+  Small: 1024,
+  Medium: Small * 10,
+  Large: Medium * 10,
+  XLarge: Large * 10
+} as const;
+type FileSizeType = typeof FileSize[keyof typeof FileSize];
+
+const Flags = {
+  None: 0,
+  Read: 1 << 0,
+  Write: 1 << 1,
+  Execute: 1 << 2,
+  All: Read | Write | Execute
+} as const;
+type FlagsType = typeof Flags[keyof typeof Flags];
+
+function checkFileSize(size: number): string {
+  if (size <= FileSize.Small) return "small";
+  if (size <= FileSize.Medium) return "medium";
+  if (size <= FileSize.Large) return "large";
+  return "xlarge";
+}'
+`;

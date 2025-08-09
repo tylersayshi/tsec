@@ -1,38 +1,34 @@
-const Color = {
-  Red: "red",
-  Green: "green",
-  Blue: "blue"
-} as const;
-type ColorType = typeof Color[keyof typeof Color];
+enum Color {
+  Red = "red",
+  Green = "green",
+  Blue = "blue",
+}
 
-const Status = {
-  Pending: 0,
-  Active: 1,
-  Inactive: 2
-} as const;
-type StatusType = typeof Status[keyof typeof Status];
+enum Status {
+  Pending = 0,
+  Active = 1,
+  Inactive = 2,
+}
 
-const Direction = {
-  North: "NORTH",
-  South: "SOUTH",
-  East: "EAST",
-  West: "WEST"
-} as const;
-type DirectionType = typeof Direction[keyof typeof Direction];
+enum Direction {
+  North = "NORTH",
+  South = "SOUTH",
+  East = "EAST",
+  West = "WEST",
+}
 
-const Priority = {
-  Low: 0,
-  Medium: 1,
-  High: 2,
-  Critical: "CRITICAL"
-} as const;
-type PriorityType = typeof Priority[keyof typeof Priority];
+enum Priority {
+  Low = 0,
+  Medium = 1,
+  High = 2,
+  Critical = "CRITICAL",
+}
 
-function _getColorName(color: ColorType): string {
+function _getColorName(color: Color): string {
   return color;
 }
 
-function _getStatusText(status: StatusType): string {
+function _getStatusText(status: Status): string {
   switch (status) {
     case Status.Pending:
       return "Pending";
@@ -48,12 +44,12 @@ function _getStatusText(status: StatusType): string {
 interface User {
   id: number;
   name: string;
-  status: StatusType;
-  favoriteColor: ColorType;
+  status: Status;
+  favoriteColor: Color;
 }
 
 class Navigation {
-  private currentDirection: DirectionType = Direction.North;
+  private currentDirection: Direction = Direction.North;
 
   turnLeft(): void {
     switch (this.currentDirection) {
@@ -72,7 +68,7 @@ class Navigation {
     }
   }
 
-  getDirection(): DirectionType {
+  getDirection(): Direction {
     return this.currentDirection;
   }
 }
@@ -83,9 +79,13 @@ function processTask(priority: TaskPriority): void {
   console.log(`Processing task with priority: ${priority}`);
 }
 
-const _allColors: ColorType[] = [Color.Red, Color.Green, Color.Blue];
+function _handleLowPriority(p: Priority.Low): void {
+  console.log(`Handling low priority task: ${p}`);
+}
 
-const _colorMap: Record<ColorType, string> = {
+const _allColors: Color[] = [Color.Red, Color.Green, Color.Blue];
+
+const _colorMap: Record<Color, string> = {
   [Color.Red]: "#FF0000",
   [Color.Green]: "#00FF00",
   [Color.Blue]: "#0000FF",
