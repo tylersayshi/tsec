@@ -171,10 +171,10 @@ const compass: Direction[] = [
 ];`;
 
     const expectedOutput = `const Direction = {
-  North: 0,
-  South: 1,
-  East: 2,
-  West: 3,
+  North: "North",
+  South: "South",
+  East: "East",
+  West: "West",
 } as const;
 type DirectionType = typeof Direction[keyof typeof Direction];
 
@@ -313,9 +313,9 @@ const Status = {
 type StatusType = typeof Status[keyof typeof Status];
 
 const Priority = {
-  Low: 0,
-  Medium: 1,
-  High: 2,
+  Low: "Low",
+  Medium: "Medium",
+  High: "High",
 } as const;
 type PriorityType = typeof Priority[keyof typeof Priority];
 
@@ -696,132 +696,48 @@ Deno.test("comprehensive enum transformation - full sample", async () => {
   }
 });
 
-// TODO LAZINESS START
-Deno.test.ignore(
+Deno.test(
   "enum usage in destructuring and object patterns",
   async () => {
     const utils = new TestUtils();
     const testFile = "destructuring_test.ts";
 
     try {
-      const originalContent = `enum Theme {
-  Light = "light",
-  Dark = "dark",
-  Auto = "auto"
-}
-
-enum Size {
-  Small = "sm",
-  Medium = "md",
-  Large = "lg"
-}
-
-interface ComponentProps {
-  theme: Theme;
-  size: Size;
-  disabled?: boolean;
-}
-
-function createComponent({ 
-  theme = Theme.Light, 
-  size = Size.Medium, 
-  disabled = false 
-}: Partial<ComponentProps> = {}): ComponentProps {
-  return { theme, size, disabled };
-}
-
-const config = {
-  defaultTheme: Theme.Dark,
-  availableSizes: [Size.Small, Size.Medium, Size.Large],
-  themeColors: {
-    [Theme.Light]: "#ffffff",
-    [Theme.Dark]: "#000000",
-    [Theme.Auto]: "inherit"
-  }
-};
-
-const { defaultTheme, availableSizes } = config;
-
-function handleThemeChange(newTheme: Theme): void {
-  const themes: Record<Theme, () => void> = {
-    [Theme.Light]: () => console.log("Switching to light theme"),
-    [Theme.Dark]: () => console.log("Switching to dark theme"), 
-    [Theme.Auto]: () => console.log("Using system theme")
-  };
-  
-  themes[newTheme]?.();
-}`;
+      const originalContent = await Deno.readTextFile(
+        "spec/object-patterns.in.ts",
+      );
+      const expectedOutput = await Deno.readTextFile(
+        "spec/object-patterns.out.ts",
+      );
 
       await utils.createTestFile(testFile, originalContent);
       const result = await utils.runAndReadCodemod(testFile);
       await checkTsFile(testFile);
-      assertEquals(result, "todo");
+      assertEquals(result, expectedOutput);
     } finally {
       await utils.cleanup();
     }
   },
 );
 
-Deno.test.ignore(
+Deno.test(
   "enum usage in template literals and conditionals",
   async () => {
     const utils = new TestUtils();
     const testFile = "templates_conditionals_test.ts";
 
     try {
-      const originalContent = `enum LogLevel {
-  Debug = 0,
-  Info = 1,
-  Warning = 2,
-  Error = 3
-}
-
-enum Environment {
-  Development = "dev",
-  Staging = "staging", 
-  Production = "prod"
-}
-
-class Logger {
-  constructor(
-    private level: LogLevel = LogLevel.Info,
-    private env: Environment = Environment.Development
-  ) {}
-
-  log(level: LogLevel, message: string): void {
-    if (level >= this.level) {
-      const prefix = \`[\${Environment[this.env] || this.env}][\${LogLevel[level]}]\`;
-      console.log(\`\${prefix} \${message}\`);
-    }
-  }
-
-  debug(msg: string) { this.log(LogLevel.Debug, msg); }
-  info(msg: string) { this.log(LogLevel.Info, msg); }
-  warn(msg: string) { this.log(LogLevel.Warning, msg); }
-  error(msg: string) { this.log(LogLevel.Error, msg); }
-}
-
-function getLogLevelName(level: LogLevel): string {
-  return level === LogLevel.Debug ? "Debug Mode" :
-         level === LogLevel.Info ? "Information" :
-         level === LogLevel.Warning ? "Warning!" :
-         level === LogLevel.Error ? "ERROR!" : "Unknown";
-}
-
-const logger = new Logger(
-  LogLevel.Warning, 
-  Environment.Production
-);
-
-const isProduction = logger['env'] === Environment.Production;
-const isDevelopment = logger['env'] === Environment.Development;
-
-logger.error(\`Critical error in \${Environment.Production} environment\`);`;
+      const originalContent = await Deno.readTextFile(
+        "spec/template-literal.in.ts",
+      );
+      const expectedOutput = await Deno.readTextFile(
+        "spec/template-literal.out.ts",
+      );
 
       await utils.createTestFile(testFile, originalContent);
       const result = await utils.runAndReadCodemod(testFile);
       await checkTsFile(testFile);
-      assertEquals(result, "todo");
+      assertEquals(result, expectedOutput);
     } finally {
       await utils.cleanup();
     }

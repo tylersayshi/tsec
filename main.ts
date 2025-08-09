@@ -20,7 +20,8 @@ function convertEnumToObject(enumDeclaration: EnumDeclaration): void {
       const name = member.getName();
       const comment = member.getLeadingCommentRanges()[0]?.getText();
       const initializer = member.getInitializer();
-      const value = initializer ? initializer.getText() : member.getValue();
+      // TODO mode should be configurable to support enums with implicit numeric values
+      const value = initializer ? initializer.getText() : `"${name}"`;
       const keyValue = `${name}: ${value}`;
       return comment ? comment + "\n  " + keyValue : keyValue;
     })
