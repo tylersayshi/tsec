@@ -1,9 +1,9 @@
 import {
-  Project,
-  SyntaxKind,
-  Node,
   EnumDeclaration,
   Identifier,
+  Node,
+  Project,
+  SyntaxKind,
 } from "ts-morph";
 
 const project = new Project();
@@ -12,25 +12,25 @@ function convertEnumToObject(enumDeclaration: EnumDeclaration): void {
   const enumName = enumDeclaration.getName();
   if (!enumName) return;
 
-  // const sourceFile = enumDeclaration.getSourceFile();
   const enumMembers = enumDeclaration.getMembers();
 
   // Create the object literal
-  const objectMembers =
-    enumMembers
-      .map((member) => {
-        const name = member.getName();
-        const initializer = member.getInitializer();
-        const value = initializer ? initializer.getText() : member.getValue();
-        return `${name}: ${value}`;
-      })
-      .join(",\n  ") + ","; // Add trailing comma
+  const objectMembers = enumMembers
+    .map((member) => {
+      const name = member.getName();
+      const initializer = member.getInitializer();
+      const value = initializer ? initializer.getText() : member.getValue();
+      return `${name}: ${value}`;
+    })
+    .join(",\n  ") + ","; // Add trailing comma
 
   // Create the object declaration
-  const objectDeclaration = `const ${enumName} = {\n  ${objectMembers}\n} as const;`;
+  const objectDeclaration =
+    `const ${enumName} = {\n  ${objectMembers}\n} as const;`;
 
   // Create the type definition
-  const typeDefinition = `type ${enumName}Type = typeof ${enumName}[keyof typeof ${enumName}];`;
+  const typeDefinition =
+    `type ${enumName}Type = typeof ${enumName}[keyof typeof ${enumName}];`;
 
   // Replace the enum with object and type
   enumDeclaration.replaceWithText(`${objectDeclaration}\n${typeDefinition}`);
@@ -39,7 +39,7 @@ function convertEnumToObject(enumDeclaration: EnumDeclaration): void {
 function updateEnumReferences(sourceFile: Node, enumNames: string[]): void {
   // Find all type references that reference enums
   const typeReferences = sourceFile.getDescendantsOfKind(
-    SyntaxKind.TypeReference
+    SyntaxKind.TypeReference,
   );
 
   typeReferences.forEach((typeRef) => {
@@ -79,7 +79,7 @@ function updateEnumReferences(sourceFile: Node, enumNames: string[]): void {
         if (enumNames.includes(enumName)) {
           // Replace the type node with Extract<EnumType, 'Property'>
           typeNode.replaceWithText(
-            `Extract<${enumName}Type, typeof ${enumName}.${propertyName}>`
+            `Extract<${enumName}Type, typeof ${enumName}.${propertyName}>`,
           );
         }
       }
