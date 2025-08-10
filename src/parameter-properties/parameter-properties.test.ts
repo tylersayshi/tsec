@@ -36,17 +36,17 @@ class TestUtils {
   private tempFiles = new Set<string>();
 
   async createTestFile(filePath: string, content: string): Promise<void> {
-    await Deno.writeTextFile("tmp/" + filePath, content);
-    this.tempFiles.add("tmp/" + filePath);
+    await Deno.writeTextFile(filePath, content);
+    this.tempFiles.add(filePath);
   }
 
   async readTestFile(filePath: string): Promise<string> {
-    return await Deno.readTextFile("tmp/" + filePath);
+    return await Deno.readTextFile(filePath);
   }
 
   async runAndReadCodemod(filePath: string): Promise<string> {
-    parameterPropertiesCodemod("tmp/" + filePath);
-    return await this.readTestFile("tmp/" + filePath);
+    parameterPropertiesCodemod(filePath);
+    return await this.readTestFile(filePath);
   }
 
   async cleanup(): Promise<void> {
@@ -62,9 +62,9 @@ class TestUtils {
   }
 }
 
-Deno.test.only("converts public parameter properties", async () => {
+Deno.test("converts public parameter properties", async () => {
   const utils = new TestUtils();
-  const testFile = "public_params_test.ts";
+  const testFile = "tmp/public_params_test.ts";
 
   try {
     const originalContent = `class User {
@@ -98,7 +98,7 @@ console.log(user.name, user.age);`;
 
 Deno.test("converts private parameter properties", async () => {
   const utils = new TestUtils();
-  const testFile = "private_params_test.ts";
+  const testFile = "tmp/private_params_test.ts";
 
   try {
     const originalContent = `class BankAccount {
@@ -142,7 +142,7 @@ Deno.test("converts private parameter properties", async () => {
 
 Deno.test("converts readonly parameter properties", async () => {
   const utils = new TestUtils();
-  const testFile = "readonly_params_test.ts";
+  const testFile = "tmp/readonly_params_test.ts";
 
   try {
     const originalContent = `class Configuration {
@@ -186,16 +186,11 @@ Deno.test("converts readonly parameter properties", async () => {
 
 Deno.test("converts mixed access modifiers", async () => {
   const utils = new TestUtils();
-  const testFile = "mixed_modifiers_test.ts";
+  const testFile = "tmp/mixed_modifiers_test.ts";
 
   try {
     const originalContent = `class Product {
-  constructor(
-    public name: string,
-    private price: number,
-    protected category: string,
-    readonly id: string
-  ) {}
+  constructor(public name: string, private price: number, protected category: string, readonly id: string) {}
   
   getName(): string {
     return this.name;
@@ -220,12 +215,7 @@ Deno.test("converts mixed access modifiers", async () => {
   protected category: string;
   readonly id: string;
   
-  constructor(
-    name: string,
-    price: number,
-    category: string,
-    id: string
-  ) {
+  constructor(name: string, price: number, category: string, id: string) {
     this.name = name;
     this.price = price;
     this.category = category;
@@ -260,15 +250,11 @@ Deno.test("converts mixed access modifiers", async () => {
 
 Deno.test("handles parameter properties with initializers", async () => {
   const utils = new TestUtils();
-  const testFile = "initializers_test.ts";
+  const testFile = "tmp/initializers_test.ts";
 
   try {
     const originalContent = `class Settings {
-  constructor(
-    public theme: string = "dark",
-    public language: string = "en",
-    private debug: boolean = false
-  ) {}
+  constructor(public theme: string = "dark", public language: string = "en", private debug: boolean = false) {}
   
   getTheme(): string {
     return this.theme;
@@ -288,11 +274,7 @@ Deno.test("handles parameter properties with initializers", async () => {
   public language: string;
   private debug: boolean;
   
-  constructor(
-    theme: string = "dark",
-    language: string = "en",
-    debug: boolean = false
-  ) {
+  constructor(theme: string = "dark", language: string = "en", debug: boolean = false) {
     this.theme = theme;
     this.language = language;
     this.debug = debug;
@@ -322,7 +304,7 @@ Deno.test("handles parameter properties with initializers", async () => {
 
 Deno.test("handles complex types in parameter properties", async () => {
   const utils = new TestUtils();
-  const testFile = "complex_types_test.ts";
+  const testFile = "tmp/complex_types_test.ts";
 
   try {
     const originalContent = `interface UserData {
@@ -337,7 +319,7 @@ class UserManager {
   constructor(
     public users: UserData[],
     private statusFilter: Status,
-    protected config: { maxUsers: number; timeout: number }
+    protected config: { maxUsers: number; timeout: number; }
   ) {}
   
   getUsers(): UserData[] {
@@ -364,13 +346,9 @@ type Status = "active" | "inactive" | "pending";
 class UserManager {
   public users: UserData[];
   private statusFilter: Status;
-  protected config: { maxUsers: number; timeout: number };
+  protected config: { maxUsers: number; timeout: number; };
   
-  constructor(
-    users: UserData[],
-    statusFilter: Status,
-    config: { maxUsers: number; timeout: number }
-  ) {
+  constructor(users: UserData[], statusFilter: Status, config: { maxUsers: number; timeout: number; }) {
     this.users = users;
     this.statusFilter = statusFilter;
     this.config = config;
@@ -400,7 +378,7 @@ class UserManager {
 
 Deno.test("handles multiple classes in single file", async () => {
   const utils = new TestUtils();
-  const testFile = "multiple_classes_test.ts";
+  const testFile = "tmp/multiple_classes_test.ts";
 
   try {
     const originalContent = `class Person {
@@ -412,11 +390,7 @@ Deno.test("handles multiple classes in single file", async () => {
 }
 
 class Car {
-  constructor(
-    private brand: string,
-    private model: string,
-    public year: number
-  ) {}
+  constructor(private brand: string, private model: string, public year: number) {}
   
   getBrand(): string {
     return this.brand;
@@ -462,11 +436,7 @@ class Car {
   private model: string;
   public year: number;
   
-  constructor(
-    brand: string,
-    model: string,
-    year: number
-  ) {
+  constructor(brand: string, model: string, year: number) {
     this.brand = brand;
     this.model = model;
     this.year = year;
@@ -514,7 +484,7 @@ class Database {
 
 Deno.test("preserves existing class properties", async () => {
   const utils = new TestUtils();
-  const testFile = "existing_properties_test.ts";
+  const testFile = "tmp/existing_properties_test.ts";
 
   try {
     const originalContent = `class Employee {
@@ -532,9 +502,10 @@ Deno.test("preserves existing class properties", async () => {
 }`;
 
     const expectedOutput = `class Employee {
-  private department: string = "Engineering";
   public name: string;
   public id: number;
+
+  private department: string = "Engineering";
   
   constructor(name: string, id: number) {
     this.name = name;
@@ -561,7 +532,7 @@ Deno.test("preserves existing class properties", async () => {
 
 Deno.test("handles classes without parameter properties", async () => {
   const utils = new TestUtils();
-  const testFile = "no_params_test.ts";
+  const testFile = "tmp/no_params_test.ts";
 
   try {
     const originalContent = `class SimpleClass {
@@ -615,7 +586,7 @@ class EmptyClass {
 
 Deno.test("preserves comments", async () => {
   const utils = new TestUtils();
-  const testFile = "comments_test.ts";
+  const testFile = "tmp/comments_test.ts";
 
   try {
     const originalContent = `/**
@@ -669,7 +640,7 @@ class User {
 
 Deno.test("handles generic classes", async () => {
   const utils = new TestUtils();
-  const testFile = "generic_classes_test.ts";
+  const testFile = "tmp/generic_classes_test.ts";
 
   try {
     const originalContent = `class Container<T> {
@@ -741,9 +712,9 @@ class Pair<K, V> {
   }
 });
 
-Deno.test("handles abstract classes", async () => {
+Deno.test.only("handles abstract classes", async () => {
   const utils = new TestUtils();
-  const testFile = "abstract_classes_test.ts";
+  const testFile = "tmp/abstract_classes_test.ts";
 
   try {
     const originalContent = `abstract class Animal {

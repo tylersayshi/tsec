@@ -45,9 +45,7 @@ function convertParameterProperties(classDeclaration: ClassDeclaration): void {
       const propertyDeclaration = `${modifiers} ${paramName}: ${paramType};`;
       propertyDeclarations.push(propertyDeclaration);
 
-      const assignment = initializer
-        ? `this.${paramName} = ${paramName};`
-        : `this.${paramName} = ${paramName};`;
+      const assignment = `this.${paramName} = ${paramName};`;
       constructorAssignments.push(assignment);
     }
   });
@@ -55,34 +53,53 @@ function convertParameterProperties(classDeclaration: ClassDeclaration): void {
   if (propertyDeclarations.length > 0) {
     const classComment = classDeclaration.getLeadingCommentRanges()[0]
       ?.getText();
-    const existingText = classDeclaration.getText();
-    const constructorStart = existingText.indexOf("constructor(");
-    const constructorEnd = existingText.lastIndexOf(")") + 1;
-
-    const newConstructorBody = constructorAssignments.length > 0
-      ? ` {\n    ${constructorAssignments.join("\n    ")}\n  }`
-      : "";
-
-    const newConstructor = existingText.substring(
-      constructorStart,
-      constructorEnd,
-    ) + newConstructorBody;
-
-    const newClassText = existingText.replace(
-      existingText.substring(constructorStart),
-      newConstructor,
+    // Get the class text and find the constructor
+    const classText = classDeclaration.getText();
+    const constructorMatch = classText.match(
+      /constructor\s*\([^)]*\)\s*\{?\s*\}?/,
     );
 
-    const propertiesText = propertyDeclarations.join("\n  ");
-    let finalText = newClassText.replace(
-      /class\s+\w+\s*{/,
-      `class ${className} {\n  ${propertiesText}`,
-    );
-    if (classComment) {
-      finalText = classComment + "\n" + finalText;
+    if (constructorMatch) {
+      const constructorText = constructorMatch[0];
+      const constructorStart = classText.indexOf(constructorText);
+      const constructorEnd = constructorStart + constructorText.length;
+
+      // Create new constructor with assignments
+      const newConstructorParams = constructor.getParameters()
+        .map((param) => {
+          const paramName = param.getName();
+          const paramType = param.getType().getText();
+          const initializer = param.getInitializer()?.getText();
+          return initializer
+            ? `${paramName}: ${paramType} = ${initializer}`
+            : `${paramName}: ${paramType}`;
+        })
+        .join(", ");
+
+      const newConstructor = `constructor(${newConstructorParams}) {\n    ${
+        constructorAssignments.join("\n    ")
+      }\n  }`;
+
+      // Replace constructor in class text
+      const newClassText = classText.substring(0, constructorStart) +
+        newConstructor +
+        classText.substring(constructorEnd);
+
+      // Add property declarations after class opening brace
+      const classBraceIndex = newClassText.indexOf("{");
+      if (classBraceIndex !== -1) {
+        const propertiesText = propertyDeclarations.join("\n  ");
+        let finalText = newClassText.substring(0, classBraceIndex + 1) +
+          "\n  " + propertiesText + "\n  " +
+          newClassText.substring(classBraceIndex + 1);
+
+        if (classComment) {
+          finalText = classComment + "\n" + finalText;
+        }
+
+        classDeclaration.replaceWithText(finalText);
+      }
     }
-
-    classDeclaration.replaceWithText(finalText);
   }
 }
 
