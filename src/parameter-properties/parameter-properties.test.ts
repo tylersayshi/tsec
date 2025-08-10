@@ -26,6 +26,25 @@ async function checkTsFile(filePath: string): Promise<void> {
   });
 }
 
+async function denoFmt(filePath: string): Promise<void> {
+  await new Promise((resolve, reject) => {
+    const tsc = spawn("deno", ["fmt", filePath]);
+
+    tsc.stderr.on("data", (data) => {
+      console.error(data.toString());
+    });
+
+    tsc.on("close", (code: number) => {
+      if (code === 0) {
+        console.log("Typecheck succeeded 🎉");
+        resolve(undefined);
+      } else {
+        reject(new Error("Typecheck failed"));
+      }
+    });
+  });
+}
+
 /**
  * Test utilities for codemod testing with proper cleanup
  * @example
@@ -46,6 +65,7 @@ class TestUtils {
 
   async runAndReadCodemod(filePath: string): Promise<string> {
     parameterPropertiesCodemod(filePath);
+    await denoFmt(filePath);
     return await this.readTestFile(filePath);
   }
 
@@ -77,7 +97,7 @@ console.log(user.name, user.age);`;
     const expectedOutput = `class User {
   public name: string;
   public age: number;
-  
+
   constructor(name: string, age: number) {
     this.name = name;
     this.age = age;
@@ -85,7 +105,8 @@ console.log(user.name, user.age);`;
 }
 
 const user = new User("John", 30);
-console.log(user.name, user.age);`;
+console.log(user.name, user.age);
+`;
 
     await utils.createTestFile(testFile, originalContent);
     const result = await utils.runAndReadCodemod(testFile);
@@ -504,7 +525,7 @@ Deno.test("preserves existing class properties", async () => {
     const expectedOutput = `class Employee {
   public name: string;
   public id: number;
-
+  
   private department: string = "Engineering";
   
   constructor(name: string, id: number) {
@@ -712,7 +733,7 @@ class Pair<K, V> {
   }
 });
 
-Deno.test.only("handles abstract classes", async () => {
+Deno.test("handles abstract classes", async () => {
   const utils = new TestUtils();
   const testFile = "tmp/abstract_classes_test.ts";
 
@@ -746,9 +767,9 @@ class Dog extends Animal {
 }`;
 
     const expectedOutput = `abstract class Animal {
-  public name: string;
-  protected species: string;
-  
+    public name: string;
+    protected species: string;
+    
   constructor(name: string, species: string) {
     this.name = name;
     this.species = species;
@@ -766,8 +787,8 @@ class Dog extends Animal {
 }
 
 class Dog extends Animal {
-  public breed: string;
-  
+    public breed: string;
+    
   constructor(name: string, breed: string) {
     super(name, "Canis");
     this.breed = breed;
