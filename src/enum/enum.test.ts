@@ -1,4 +1,4 @@
-import { runCodemod } from "./enum.ts";
+import { enumCodemod } from "./enum.ts";
 import { spawn } from "node:child_process";
 import { assertEquals } from "jsr:@std/assert";
 
@@ -45,7 +45,7 @@ class TestUtils {
   }
 
   async runAndReadCodemod(filePath: string): Promise<string> {
-    runCodemod(filePath);
+    enumCodemod(filePath);
     return await this.readTestFile(filePath);
   }
 
