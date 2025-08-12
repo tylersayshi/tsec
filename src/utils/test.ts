@@ -87,7 +87,8 @@ class TestUtils {
 
 export const executeTest = async (codemod: (filePath: string) => void) => {
   const utils = new TestUtils(codemod);
-  if (!exists("./tmp")) {
+  const tmpExists = await exists("./tmp");
+  if (!tmpExists) {
     await Deno.mkdir("./tmp");
   }
 
