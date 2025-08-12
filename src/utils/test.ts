@@ -10,7 +10,8 @@ async function checkTsFile(filePath: string): Promise<void> {
   await new Promise((resolve, reject) => {
     const tsc = spawn("deno", ["check", filePath]);
 
-    tsc.stderr.on("data", (data) => {
+    // deno-lint-ignore no-explicit-any
+    tsc.stderr.on("data", (data: any) => {
       console.error(data.toString());
     });
 
@@ -29,7 +30,8 @@ async function denoFmt(filePath: string): Promise<void> {
   await new Promise((resolve, reject) => {
     const tsc = spawn("deno", ["fmt", filePath]);
 
-    tsc.stderr.on("data", (data) => {
+    // deno-lint-ignore no-explicit-any
+    tsc.stderr.on("data", (data: any) => {
       console.error(data.toString());
     });
 
