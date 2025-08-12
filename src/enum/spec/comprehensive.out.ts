@@ -77,13 +77,18 @@ class Navigation {
   }
 }
 
-type TaskPriority = Extract<PriorityType, typeof Priority.Low> | Extract<PriorityType, typeof Priority.Medium> | Extract<PriorityType, typeof Priority.High>;
+type TaskPriority =
+  | Extract<PriorityType, typeof Priority.Low>
+  | Extract<PriorityType, typeof Priority.Medium>
+  | Extract<PriorityType, typeof Priority.High>;
 
 function processTask(priority: TaskPriority): void {
   console.log(`Processing task with priority: ${priority}`);
 }
 
-function _handleLowPriority(p: Extract<PriorityType, typeof Priority.Low>): void {
+function _handleLowPriority(
+  p: Extract<PriorityType, typeof Priority.Low>,
+): void {
   console.log(`Handling low priority task: ${p}`);
 }
 
@@ -112,5 +117,5 @@ console.log(navigation.getDirection());
 
 processTask(Priority.High);
 
-export { Color, Status, Direction, Priority };
-export type { User, TaskPriority };
+export { Color, Direction, Priority, Status };
+export type { TaskPriority, User };

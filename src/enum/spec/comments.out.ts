@@ -15,17 +15,17 @@ type UserRoleType = typeof UserRole[keyof typeof UserRole];
 const DEFAULT_ROLE: UserRoleType = UserRole.User;
 
 /*
-* Permission check function
-*/
+ * Permission check function
+ */
 function hasPermission(role: UserRoleType, action: string): boolean {
- switch (role) {
-   case UserRole.Admin:
-     return true; // Admin can do everything
-   case UserRole.Moderator:
-     return action !== "delete_user";
-   case UserRole.User:
-     return action === "read";
-   default:
-     return false;
- }
+  switch (role) {
+    case UserRole.Admin:
+      return true; // Admin can do everything
+    case UserRole.Moderator:
+      return action !== "delete_user";
+    case UserRole.User:
+      return action === "read";
+    default:
+      return false;
+  }
 }

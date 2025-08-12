@@ -1,7 +1,7 @@
 enum Color {
   Red = "red",
   Green = "green",
-  Blue = "blue"
+  Blue = "blue",
 }
 
 enum Status {
@@ -21,7 +21,7 @@ enum Priority {
   Low = 0,
   Medium = 1,
   High = 2,
-  Critical = "CRITICAL"
+  Critical = "CRITICAL",
 }
 
 function _getColorName(color: Color): string {
@@ -108,5 +108,5 @@ console.log(navigation.getDirection());
 
 processTask(Priority.High);
 
-export { Color, Status, Direction, Priority };
-export type { User, TaskPriority };
+export { Color, Direction, Priority, Status };
+export type { TaskPriority, User };

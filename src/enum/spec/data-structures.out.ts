@@ -62,7 +62,10 @@ const allowedMethods: Set<HttpMethodType> = new Set([
   HttpMethod.DELETE,
 ]);
 
-function validateResponse(status: HttpStatusType, method: HttpMethodType): boolean {
+function validateResponse(
+  status: HttpStatusType,
+  method: HttpMethodType,
+): boolean {
   const successStatuses = [HttpStatus.OK, HttpStatus.Created];
   const errorStatuses = [
     HttpStatus.BadRequest,

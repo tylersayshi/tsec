@@ -16,6 +16,8 @@ function convertParameterProperties(classDeclaration: ClassDeclaration): void {
   const parameters = constructor.getParameters();
   const constructorContent = constructor.getBody()?.getText().slice(1, -1)
     .trim();
+  const constructorComment = constructor.getLeadingCommentRanges()[0]
+    ?.getText();
   const parameterProperties = parameters.filter((param) =>
     param.hasModifier(SyntaxKind.ReadonlyKeyword) ||
     param.hasModifier(SyntaxKind.PublicKeyword) ||
@@ -74,9 +76,12 @@ function convertParameterProperties(classDeclaration: ClassDeclaration): void {
         constructorAssignments.unshift(constructorContent);
       }
 
-      const newConstructor = `constructor(${newConstructorParams}) {\n    ${
+      let newConstructor = `constructor(${newConstructorParams}) {\n    ${
         constructorAssignments.join("\n")
       }\n  }`;
+      if (constructorComment) {
+        newConstructor = constructorComment + "\n" + newConstructor;
+      }
 
       constructor.replaceWithText(newConstructor);
       classDeclaration.insertProperties(0, propertyDeclarations);
