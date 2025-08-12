@@ -74,3 +74,31 @@ const LogLevel = {
 } as const;
 type LogLevelType = typeof LogLevel[keyof typeof LogLevel];
 ```
+
+## Parameter Properties
+
+This one doesn't feel like much of an assumption and the change is relatively
+simple, so let's just looks at some code.
+
+```ts
+// before
+class User {
+  constructor(public name: string, public age: number) {}
+}
+
+// after
+class User {
+  public name: string;
+  public age: number;
+
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
+}
+```
+
+Relatively simple here... instead of implicitly adding properties from the
+constructor, they're explicitly defined as normal. If you'd like to see more
+examples, feel free to checkout the spec folder where inputs are `.in.ts` and
+output is `.out.ts` [here](../src/parameter-properties/spec/).
