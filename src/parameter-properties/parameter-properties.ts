@@ -79,8 +79,6 @@ function convertParameterProperties(classDeclaration: ClassDeclaration): void {
       }\n  }`;
 
       constructor.replaceWithText(newConstructor);
-      classDeclaration.setOrder;
-
       classDeclaration.insertProperties(0, propertyDeclarations);
     }
   }
