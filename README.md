@@ -1,10 +1,10 @@
-# TypeScript Erasable Codemod
+# TypeScript `erasableSyntaxOnly` Codemod
 
 **Disclaimer: This is under very initial development and is not ready at all for
 use. Contributions and feedback are very welcome though 🙌**
 
-Hi! This is `tsec`, the codemod tool for automatically migrating your code to be
-compatible with TypeScript's
+Hi! This is `tsec`, a third-party codemod tool for automatically migrating your
+code to be compatible with TypeScript's
 [erasableSyntaxOnly](https://www.typescriptlang.org/tsconfig/#erasableSyntaxOnly)
 flag.
 
