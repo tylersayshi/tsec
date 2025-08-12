@@ -1,4 +1,5 @@
 import { assertEquals } from "@std/assert/equals";
+import { exists } from "@std/fs/exists";
 import { spawn } from "node:child_process";
 
 /**
@@ -84,8 +85,11 @@ class TestUtils {
   }
 }
 
-export const executeTest = (codemod: (filePath: string) => void) => {
+export const executeTest = async (codemod: (filePath: string) => void) => {
   const utils = new TestUtils(codemod);
+  if (!exists("./tmp")) {
+    await Deno.mkdir("./tmp");
+  }
 
   return async (
     config: {
