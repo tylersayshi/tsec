@@ -16,7 +16,7 @@ described in [assumptions.md](./docs/assumptions.md).
 **Additional mods**
 
 - [ ] namespaces and modules with runtime code
-- [ ] parameter properties in classes
+- [x] parameter properties in classes
 - [ ] Non-ECMAScript import = and export = assignments
 - [ ] check support needed for import rewrites:
       [docs](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-7.html#path-rewriting-for-relative-paths)
