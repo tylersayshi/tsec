@@ -100,6 +100,7 @@ export const executeTest = async (codemod: (filePath: string) => void) => {
     },
   ) => {
     const { testFile, inFile, outFile } = config;
+    const tmpPath = `./tmp/${testFile}`;
 
     try {
       const originalContent = await Deno.readTextFile(
@@ -109,9 +110,9 @@ export const executeTest = async (codemod: (filePath: string) => void) => {
         outFile,
       );
 
-      await utils.createTestFile(testFile, originalContent);
-      const result = await utils.runAndReadCodemod(testFile);
-      await checkTsFile(testFile);
+      await utils.createTestFile(tmpPath, originalContent);
+      const result = await utils.runAndReadCodemod(tmpPath);
+      await checkTsFile(tmpPath);
       assertEquals(result, expectedOutput);
     } finally {
       await utils.cleanup();

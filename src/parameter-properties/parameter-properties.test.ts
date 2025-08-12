@@ -5,7 +5,7 @@ const testFn = await executeTest(parameterPropertiesCodemod);
 
 Deno.test("converts public parameter properties", async () => {
   await testFn({
-    testFile: "tmp/public_params_test.ts",
+    testFile: "public_params_test.ts",
     inFile: "src/parameter-properties/spec/public-params.in.ts",
     outFile: "src/parameter-properties/spec/public-params.out.ts",
   });
@@ -13,7 +13,7 @@ Deno.test("converts public parameter properties", async () => {
 
 Deno.test("converts private parameter properties", async () => {
   await testFn({
-    testFile: "tmp/private_params_test.ts",
+    testFile: "private_params_test.ts",
     inFile: "src/parameter-properties/spec/private-params.in.ts",
     outFile: "src/parameter-properties/spec/private-params.out.ts",
   });
@@ -21,7 +21,7 @@ Deno.test("converts private parameter properties", async () => {
 
 Deno.test("converts readonly parameter properties", async () => {
   await testFn({
-    testFile: "tmp/readonly_params_test.ts",
+    testFile: "readonly_params_test.ts",
     inFile: "src/parameter-properties/spec/readonly-params.in.ts",
     outFile: "src/parameter-properties/spec/readonly-params.out.ts",
   });
@@ -29,7 +29,7 @@ Deno.test("converts readonly parameter properties", async () => {
 
 Deno.test("converts mixed access modifiers", async () => {
   await testFn({
-    testFile: "tmp/mixed_modifiers_test.ts",
+    testFile: "mixed_modifiers_test.ts",
     inFile: "src/parameter-properties/spec/mixed-modifiers.in.ts",
     outFile: "src/parameter-properties/spec/mixed-modifiers.out.ts",
   });
@@ -37,7 +37,7 @@ Deno.test("converts mixed access modifiers", async () => {
 
 Deno.test("handles parameter properties with initializers", async () => {
   await testFn({
-    testFile: "tmp/initializers_test.ts",
+    testFile: "initializers_test.ts",
     inFile: "src/parameter-properties/spec/initializers.in.ts",
     outFile: "src/parameter-properties/spec/initializers.out.ts",
   });
@@ -45,7 +45,7 @@ Deno.test("handles parameter properties with initializers", async () => {
 
 Deno.test("handles complex types in parameter properties", async () => {
   await testFn({
-    testFile: "tmp/complex_types_test.ts",
+    testFile: "complex_types_test.ts",
     inFile: "src/parameter-properties/spec/complex-types.in.ts",
     outFile: "src/parameter-properties/spec/complex-types.out.ts",
   });
@@ -53,7 +53,7 @@ Deno.test("handles complex types in parameter properties", async () => {
 
 Deno.test("handles multiple classes in single file", async () => {
   await testFn({
-    testFile: "tmp/multiple_classes_test.ts",
+    testFile: "multiple_classes_test.ts",
     inFile: "src/parameter-properties/spec/multiple-classes.in.ts",
     outFile: "src/parameter-properties/spec/multiple-classes.out.ts",
   });
@@ -61,7 +61,7 @@ Deno.test("handles multiple classes in single file", async () => {
 
 Deno.test("preserves existing class properties", async () => {
   await testFn({
-    testFile: "tmp/existing_properties_test.ts",
+    testFile: "existing_properties_test.ts",
     inFile: "src/parameter-properties/spec/existing-properties.in.ts",
     outFile: "src/parameter-properties/spec/existing-properties.out.ts",
   });
@@ -69,7 +69,7 @@ Deno.test("preserves existing class properties", async () => {
 
 Deno.test("handles classes without parameter properties", async () => {
   await testFn({
-    testFile: "tmp/no_params_test.ts",
+    testFile: "no_params_test.ts",
     inFile: "src/parameter-properties/spec/no-params.in.ts",
     outFile: "src/parameter-properties/spec/no-params.out.ts",
   });
@@ -77,7 +77,7 @@ Deno.test("handles classes without parameter properties", async () => {
 
 Deno.test("preserves comments", async () => {
   await testFn({
-    testFile: "tmp/comments_test.ts",
+    testFile: "comments_test.ts",
     inFile: "src/parameter-properties/spec/comments.in.ts",
     outFile: "src/parameter-properties/spec/comments.out.ts",
   });
@@ -85,7 +85,7 @@ Deno.test("preserves comments", async () => {
 
 Deno.test("handles generic classes", async () => {
   await testFn({
-    testFile: "tmp/generic_classes_test.ts",
+    testFile: "generic_classes_test.ts",
     inFile: "src/parameter-properties/spec/generic-classes.in.ts",
     outFile: "src/parameter-properties/spec/generic-classes.out.ts",
   });
@@ -93,7 +93,7 @@ Deno.test("handles generic classes", async () => {
 
 Deno.test("handles abstract classes", async () => {
   await testFn({
-    testFile: "tmp/abstract_classes_test.ts",
+    testFile: "abstract_classes_test.ts",
     inFile: "src/parameter-properties/spec/abstract-classes.in.ts",
     outFile: "src/parameter-properties/spec/abstract-classes.out.ts",
   });
