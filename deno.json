@@ -1,10 +1,4 @@
 {
-  "tasks": {
-    "dev": "deno run --watch main.ts"
-  },
-  "fmt": {
-    "exclude": ["spec/*.ts"]
-  },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
     "ts-morph": "jsr:@ts-morph/ts-morph@^26.0.0"
