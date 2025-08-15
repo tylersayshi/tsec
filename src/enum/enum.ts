@@ -3,6 +3,7 @@ import {
   Identifier,
   Node,
   Project,
+  QualifiedName,
   SyntaxKind,
 } from "ts-morph";
 
@@ -61,8 +62,7 @@ function updateEnumReferences(sourceFile: Node, enumNames: string[]): void {
   typeNodes.forEach((typeNode) => {
     const typeName = typeNode.getTypeName();
     if (typeName.getKind() === SyntaxKind.QualifiedName) {
-      // deno-lint-ignore no-explicit-any
-      const qualifiedName = typeName as any;
+      const qualifiedName = typeName as QualifiedName;
       const left = qualifiedName.getLeft();
       const right = qualifiedName.getRight();
       if (
