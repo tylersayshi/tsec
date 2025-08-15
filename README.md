@@ -18,7 +18,7 @@ described in [assumptions.md](./docs/assumptions.md).
 - [ ] namespaces and modules with runtime code
 - [x] parameter properties in classes
 - [ ] Non-ECMAScript import = and export = assignments
-- [ ] check support needed for import rewrites:
+- [x] (insufficient) check support needed for import rewrites:
       [docs](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-7.html#path-rewriting-for-relative-paths)
 - [ ] update tsconfig.json (maybe this can just be instructions logged from
       cli): [docs](https://nodejs.org/api/typescript.html#type-stripping)
