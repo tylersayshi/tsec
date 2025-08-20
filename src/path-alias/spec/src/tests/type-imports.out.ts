@@ -1,8 +1,8 @@
-import type { UserType } from "../src/types/user.ts";
-import type { ConfigType } from "../src/config/types.ts";
-import type { DatabaseType } from "../src/database/types.ts";
+import type { UserType } from "../types/user.ts";
+import type { ConfigType } from "../config/types.ts";
+import type { DatabaseType } from "../database/types.ts";
 
-import { UserService } from "../src/services/user.ts";
+import { UserService } from "../services/user.ts";
 
 export class UserController {
   constructor(private userService: UserService) {}

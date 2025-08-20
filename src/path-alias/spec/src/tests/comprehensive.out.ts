@@ -1,12 +1,12 @@
 // Type-only imports
-import type { UserType } from "../src/types/user.ts";
-import type { ConfigType } from "../src/config/types.ts";
+import type { UserType } from "../types/user.ts";
+import type { ConfigType } from "../config/types.ts";
 
 // Regular imports with path aliases
-import { UserService } from "../src/services/user.ts";
-import { AuthService } from "../src/services/auth.ts";
-import { Logger } from "../src/utils/logger.ts";
-import { Database } from "../src/database/connection.ts";
+import { UserService } from "../services/user.ts";
+import { AuthService } from "../services/auth.ts";
+import { Logger } from "../utils/logger.ts";
+import { Database } from "../database/connection.ts";
 
 // External packages (should be preserved)
 import express from "express";
@@ -17,15 +17,15 @@ import { Helper } from "./helper";
 import { Constants } from "../constants";
 
 // Wildcard imports
-import { UserModel } from "../src/models/index.ts";
-import { ValidationError } from "../src/types/errors.ts";
+import { UserModel } from "../models/index.ts";
+import { ValidationError } from "../types/errors.ts";
 
 // Re-exports
-export { UserService } from "../src/services/user.ts";
-export { AuthService } from "../src/services/auth.ts";
+export { UserService } from "../services/user.ts";
+export { AuthService } from "../services/auth.ts";
 
 // Default imports
-import UserController from "../src/controllers/user.ts";
+import UserController from "../controllers/user.ts";
 
 export class App {
   constructor(

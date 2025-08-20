@@ -1,8 +1,8 @@
-import { UserService } from "../src/services/user.ts";
+import { UserService } from "../services/user.ts";
 import express from "express";
 import { Request, Response } from "express";
 import { z } from "zod";
-import { Logger } from "../src/utils/logger.ts";
+import { Logger } from "../utils/logger.ts";
 
 export class UserController {
   constructor(

@@ -1,6 +1,6 @@
-import { UserService } from "../src/path-alias/spec/src/services/user.ts";
-import { Logger } from "../src/path-alias/spec/src/utils/logger.ts";
-import { Config } from "../src/path-alias/spec/src/config/app.ts";
+import { UserService } from "../../src/services/user.ts";
+import { Logger } from "../../src/utils/logger.ts";
+import { Config } from "../../src/config/app.ts";
 
 export class UserController {
   constructor(

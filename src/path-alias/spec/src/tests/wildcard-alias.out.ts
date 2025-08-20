@@ -1,7 +1,7 @@
-import { UserModel } from "../src/models/index.ts";
-import { AuthService } from "../src/services/auth.ts";
-import { DatabaseConfig } from "../src/config/database.ts";
-import { ValidationError } from "../src/types/errors.ts";
+import { UserModel } from "../models/index.ts";
+import { AuthService } from "../services/auth.ts";
+import { DatabaseConfig } from "../config/database.ts";
+import { ValidationError } from "../types/errors.ts";
 
 export class AuthController {
   constructor(

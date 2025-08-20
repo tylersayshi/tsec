@@ -1,6 +1,6 @@
 // Path aliases
-import { UserService } from "../src/services/user.ts";
-import { Logger } from "../src/utils/logger.ts";
+import { UserService } from "../services/user.ts";
+import { Logger } from "../utils/logger.ts";
 
 // External packages
 import express from "express";
@@ -11,7 +11,7 @@ import { Helper } from "./helper";
 import { Constants } from "../constants";
 
 // Type imports
-import type { UserType } from "../src/types/user.ts";
+import type { UserType } from "../types/user.ts";
 
 export class App {
   constructor(

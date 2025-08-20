@@ -140,7 +140,11 @@ function convertPathAliases(sourceFile: SourceFile): void {
       ) {
         return;
       }
-
+      console.log({
+        importPath,
+        pathMappings,
+        sourceFilePath: sourceFile.getFilePath(),
+      });
       const relativePath = resolvePathAlias(
         importPath,
         pathMappings,

@@ -1,7 +1,7 @@
-import UserController from "../src/controllers/user.ts";
-import { UserService } from "../src/services/user.ts";
-import { AuthConfig, AuthService } from "../src/services/auth.ts";
-import Logger, { LogLevel } from "../src/utils/logger.ts";
+import UserController from "../controllers/user.ts";
+import { UserService } from "../services/user.ts";
+import { AuthConfig, AuthService } from "../services/auth.ts";
+import Logger, { LogLevel } from "../utils/logger.ts";
 
 export class App {
   constructor(
