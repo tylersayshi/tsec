@@ -1,100 +1,55 @@
 import { executeTest } from "../utils/test.ts";
 import { enumCodemod } from "./enum.ts";
 
-const testFn = await executeTest(import.meta.dirname!, enumCodemod);
+const testFn = executeTest({
+  testDir: "src/enum/spec/",
+  codemod: enumCodemod,
+});
 
 Deno.test("converts string enum to object", async () => {
-  await testFn({
-    testFile: "string_enum_test.ts",
-    inFile: "src/enum/spec/string-enum.in.ts",
-    outFile: "src/enum/spec/string-enum.out.ts",
-  });
+  await testFn("string-enum");
 });
 
 Deno.test("converts numeric enum to object", async () => {
-  await testFn({
-    testFile: "numeric_enum_test.ts",
-    inFile: "src/enum/spec/numeric-enum.in.ts",
-    outFile: "src/enum/spec/numeric-enum.out.ts",
-  });
+  await testFn("numeric-enum");
 });
 
 Deno.test("converts auto-incrementing enum to object", async () => {
-  await testFn({
-    testFile: "auto_enum_test.ts",
-    inFile: "src/enum/spec/auto-enum.in.ts",
-    outFile: "src/enum/spec/auto-enum.out.ts",
-  });
+  await testFn("auto-enum");
 });
 
 Deno.test("converts mixed value enum to object", async () => {
-  await testFn({
-    testFile: "mixed_enum_test.ts",
-    inFile: "src/enum/spec/mixed-enum.in.ts",
-    outFile: "src/enum/spec/mixed-enum.out.ts",
-  });
+  await testFn("mixed-enum");
 });
 
 Deno.test("converts multiple enums in single file", async () => {
-  await testFn({
-    testFile: "multiple_enums_test.ts",
-    inFile: "src/enum/spec/multiple-enums.in.ts",
-    outFile: "src/enum/spec/multiple-enums.out.ts",
-  });
+  await testFn("multiple-enums");
 });
 
 Deno.test("preserves enum usage in complex scenarios", async () => {
-  await testFn({
-    testFile: "complex_usage_test.ts",
-    inFile: "src/enum/spec/complex-usage.in.ts",
-    outFile: "src/enum/spec/complex-usage.out.ts",
-  });
+  await testFn("complex-usage");
 });
 
 Deno.test("handles const enum conversion", async () => {
-  await testFn({
-    testFile: "const_enum_test.ts",
-    inFile: "src/enum/spec/const-enum.in.ts",
-    outFile: "src/enum/spec/const-enum.out.ts",
-  });
+  await testFn("const-enum");
 });
 
 Deno.test("preserves comments", async () => {
-  await testFn({
-    testFile: "comments_test.ts",
-    inFile: "src/enum/spec/comments.in.ts",
-    outFile: "src/enum/spec/comments.out.ts",
-  });
+  await testFn("comments");
 });
 
 Deno.test("comprehensive enum transformation - full sample", async () => {
-  await testFn({
-    testFile: "comprehensive_sample.ts",
-    inFile: "src/enum/spec/comprehensive.in.ts",
-    outFile: "src/enum/spec/comprehensive.out.ts",
-  });
+  await testFn("comprehensive");
 });
 
 Deno.test("enum usage in destructuring and object patterns", async () => {
-  await testFn({
-    testFile: "destructuring_test.ts",
-    inFile: "src/enum/spec/object-patterns.in.ts",
-    outFile: "src/enum/spec/object-patterns.out.ts",
-  });
+  await testFn("object-patterns");
 });
 
 Deno.test("enum usage in template literals and conditionals", async () => {
-  await testFn({
-    testFile: "templates_conditionals_test.ts",
-    inFile: "src/enum/spec/template-literal.in.ts",
-    outFile: "src/enum/spec/template-literal.out.ts",
-  });
+  await testFn("template-literal");
 });
 
 Deno.test("enum usage with arrays, maps and complex data structures", async () => {
-  await testFn({
-    testFile: "data_structures_test.ts",
-    inFile: "src/enum/spec/data-structures.in.ts",
-    outFile: "src/enum/spec/data-structures.out.ts",
-  });
+  await testFn("data-structures");
 });

@@ -63,21 +63,25 @@ function resolvePathAlias(
 
         const wildcardPart = match[1];
 
-        // Replace the wildcard in the target
         const resolvedPath = target.replace("*", wildcardPart);
 
-        // Convert to relative path from current file location
-        const currentDir = dirname(currentFilePath);
-
-        // Find the tsconfig.json file to determine the base directory
         const tsConfigPath = findTsConfigPath(currentFilePath);
         const baseDir = tsConfigPath
           ? dirname(tsConfigPath)
           : dirname(currentFilePath);
 
-        // Calculate relative path from current file to the resolved path
-        const relativePath = relative(currentDir, join(baseDir, resolvedPath));
-
+        console.log({
+          currentFilePath,
+          baseDir,
+          resolvedPath,
+          joined: join(baseDir, resolvedPath),
+        });
+        // currentDir is not what we want. we need to use the path of the file
+        const relativePath = relative(
+          currentFilePath,
+          join(baseDir, resolvedPath),
+        );
+        console.log({ relativePath });
         // Add .ts extension if not present
         if (
           !relativePath.endsWith(".ts") && !relativePath.endsWith(".tsx") &&
@@ -140,11 +144,7 @@ function convertPathAliases(sourceFile: SourceFile): void {
       ) {
         return;
       }
-      console.log({
-        importPath,
-        pathMappings,
-        sourceFilePath: sourceFile.getFilePath(),
-      });
+
       const relativePath = resolvePathAlias(
         importPath,
         pathMappings,

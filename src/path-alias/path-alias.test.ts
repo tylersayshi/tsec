@@ -1,100 +1,55 @@
 import { executeTest } from "../utils/test.ts";
 import { pathAliasCodemod } from "./path-alias.ts";
 
-const testFn = await executeTest(import.meta.dirname!, pathAliasCodemod);
+const testFn = executeTest({
+  testDir: "src/path-alias/spec/src/tests/",
+  codemod: pathAliasCodemod,
+});
 
 Deno.test.only("converts simple path alias to relative path", async () => {
-  await testFn({
-    testFile: "simple_alias_test.ts",
-    inFile: "src/path-alias/spec/src/tests/simple-alias.in.ts",
-    outFile: "src/path-alias/spec/src/tests/simple-alias.out.ts",
-  });
+  await testFn("simple-alias");
 });
 
 Deno.test("converts wildcard path alias to relative path", async () => {
-  await testFn({
-    testFile: "wildcard_alias_test.ts",
-    inFile: "src/path-alias/spec/src/tests/wildcard-alias.in.ts",
-    outFile: "src/path-alias/spec/src/tests/wildcard-alias.out.ts",
-  });
+  await testFn("wildcard-alias");
 });
 
 Deno.test("handles multiple imports with different aliases", async () => {
-  await testFn({
-    testFile: "multiple_imports_test.ts",
-    inFile: "src/path-alias/spec/src/tests/multiple-imports.in.ts",
-    outFile: "src/path-alias/spec/src/tests/multiple-imports.out.ts",
-  });
+  await testFn("multiple-imports");
 });
 
 Deno.test("preserves relative imports unchanged", async () => {
-  await testFn({
-    testFile: "relative_imports_test.ts",
-    inFile: "src/path-alias/spec/src/tests/relative-imports.in.ts",
-    outFile: "src/path-alias/spec/src/tests/relative-imports.out.ts",
-  });
+  await testFn("relative-imports");
 });
 
 Deno.test("preserves external package imports unchanged", async () => {
-  await testFn({
-    testFile: "external_packages_test.ts",
-    inFile: "src/path-alias/spec/src/tests/external-packages.in.ts",
-    outFile: "src/path-alias/spec/src/tests/external-packages.out.ts",
-  });
+  await testFn("external-packages");
 });
 
 Deno.test("handles complex nested path aliases", async () => {
-  await testFn({
-    testFile: "nested_aliases_test.ts",
-    inFile: "src/path-alias/spec/src/tests/nested-aliases.in.ts",
-    outFile: "src/path-alias/spec/src/tests/nested-aliases.out.ts",
-  });
+  await testFn("nested-aliases");
 });
 
 Deno.test("handles mixed import types", async () => {
-  await testFn({
-    testFile: "mixed_imports_test.ts",
-    inFile: "src/path-alias/spec/src/tests/mixed-imports.in.ts",
-    outFile: "src/path-alias/spec/src/tests/mixed-imports.out.ts",
-  });
+  await testFn("mixed-imports");
 });
 
 Deno.test("handles type-only imports", async () => {
-  await testFn({
-    testFile: "type_imports_test.ts",
-    inFile: "src/path-alias/spec/src/tests/type-imports.in.ts",
-    outFile: "src/path-alias/spec/src/tests/type-imports.out.ts",
-  });
+  await testFn("type-imports");
 });
 
 Deno.test("handles default and named imports", async () => {
-  await testFn({
-    testFile: "default_named_imports_test.ts",
-    inFile: "src/path-alias/spec/src/tests/default-named-imports.in.ts",
-    outFile: "src/path-alias/spec/src/tests/default-named-imports.out.ts",
-  });
+  await testFn("default-named-imports");
 });
 
 Deno.test("handles re-exports", async () => {
-  await testFn({
-    testFile: "re_exports_test.ts",
-    inFile: "src/path-alias/spec/src/tests/re-exports.in.ts",
-    outFile: "src/path-alias/spec/src/tests/re-exports.out.ts",
-  });
+  await testFn("re-exports");
 });
 
 Deno.test("handles dynamic imports", async () => {
-  await testFn({
-    testFile: "dynamic_imports_test.ts",
-    inFile: "src/path-alias/spec/src/tests/dynamic-imports.in.ts",
-    outFile: "src/path-alias/spec/src/tests/dynamic-imports.out.ts",
-  });
+  await testFn("dynamic-imports");
 });
 
 Deno.test("comprehensive path alias transformation", async () => {
-  await testFn({
-    testFile: "comprehensive_test.ts",
-    inFile: "src/path-alias/spec/src/tests/comprehensive.in.ts",
-    outFile: "src/path-alias/spec/src/tests/comprehensive.out.ts",
-  });
+  await testFn("comprehensive");
 });

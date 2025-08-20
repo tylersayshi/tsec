@@ -86,38 +86,30 @@ class TestUtils {
   }
 }
 
-export const executeTest = async (
-  dir: string,
-  codemod: (filePath: string) => void,
-) => {
-  const tmpDir = join(dir, "spec/tmp");
+export const executeTest = (config: {
+  testDir: `${string}/`;
+  codemod: (filePath: string) => void;
+}) => {
+  const { testDir, codemod } = config;
   const utils = new TestUtils(codemod);
-  const tmpExists = await exists(tmpDir);
-  if (!tmpExists) {
-    await Deno.mkdir(tmpDir);
-  }
 
   return async (
-    config: {
-      testFile: string;
-      inFile: string;
-      outFile: string;
-    },
+    testSlug: string,
   ) => {
-    const { testFile, inFile, outFile } = config;
-    const tmpPath = `${tmpDir}/${testFile}`;
-
+    const testFile = testDir + testSlug + ".in.ts";
+    const outFile = testDir + testSlug + ".out.ts";
+    const tmpFile = testDir + testSlug + ".modded.ts";
     try {
       const originalContent = await Deno.readTextFile(
-        inFile,
+        testFile,
       );
       const expectedOutput = await Deno.readTextFile(
         outFile,
       );
 
-      await utils.createTestFile(tmpPath, originalContent);
-      const result = await utils.runAndReadCodemod(tmpPath);
-      await checkTsFile(tmpPath);
+      await utils.createTestFile(tmpFile, originalContent);
+      const result = await utils.runAndReadCodemod(tmpFile);
+      await checkTsFile(tmpFile);
       assertEquals(result, expectedOutput);
     } finally {
       await utils.cleanup();
