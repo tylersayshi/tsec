@@ -1,5 +1,6 @@
 import { assertEquals } from "@std/assert/equals";
 import { exists } from "@std/fs/exists";
+import { join } from "@std/path/join";
 import { spawn } from "node:child_process";
 
 /**
@@ -85,11 +86,15 @@ class TestUtils {
   }
 }
 
-export const executeTest = async (codemod: (filePath: string) => void) => {
+export const executeTest = async (
+  dir: string,
+  codemod: (filePath: string) => void,
+) => {
+  const tmpDir = join(dir, "spec/tmp");
   const utils = new TestUtils(codemod);
-  const tmpExists = await exists("./tmp");
+  const tmpExists = await exists(tmpDir);
   if (!tmpExists) {
-    await Deno.mkdir("./tmp");
+    await Deno.mkdir(tmpDir);
   }
 
   return async (
@@ -100,7 +105,7 @@ export const executeTest = async (codemod: (filePath: string) => void) => {
     },
   ) => {
     const { testFile, inFile, outFile } = config;
-    const tmpPath = `./tmp/${testFile}`;
+    const tmpPath = `${tmpDir}/${testFile}`;
 
     try {
       const originalContent = await Deno.readTextFile(

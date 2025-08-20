@@ -1,0 +1,20 @@
+import { UserService } from "@services/user";
+import { AuthService } from "@services/auth";
+import { Logger } from "@utils/logger";
+import { Config } from "@config/app";
+import { Database } from "@database/connection";
+
+export class App {
+  constructor(
+    private userService: UserService,
+    private authService: AuthService,
+    private logger: Logger,
+    private config: Config,
+    private db: Database,
+  ) {}
+
+  async start() {
+    this.logger.info("Starting application");
+    await this.db.connect();
+  }
+}

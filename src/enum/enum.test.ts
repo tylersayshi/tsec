@@ -1,7 +1,7 @@
 import { executeTest } from "../utils/test.ts";
 import { enumCodemod } from "./enum.ts";
 
-const testFn = await executeTest(enumCodemod);
+const testFn = await executeTest(import.meta.dirname!, enumCodemod);
 
 Deno.test("converts string enum to object", async () => {
   await testFn({

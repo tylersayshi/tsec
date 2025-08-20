@@ -1,7 +1,10 @@
 import { executeTest } from "../utils/test.ts";
 import { parameterPropertiesCodemod } from "./parameter-properties.ts";
 
-const testFn = await executeTest(parameterPropertiesCodemod);
+const testFn = await executeTest(
+  import.meta.dirname!,
+  parameterPropertiesCodemod,
+);
 
 Deno.test("converts public parameter properties", async () => {
   await testFn({
