@@ -41,6 +41,19 @@ function findTsConfigPath(filePath: string): string | null {
   return null;
 }
 
+function pathWithExtension(path: string): string {
+  const finalPath = path.split("/");
+  const lastPart = finalPath.at(-1);
+  if (
+    lastPart?.includes(".") &&
+    (!lastPart.endsWith(".ts") || !lastPart.endsWith(".tsx"))
+  ) {
+    finalPath[finalPath.length - 1] = lastPart.replace(/\./g, "") + ".ts";
+  }
+  const joined = finalPath.join("/");
+  return joined.startsWith(".") ? `${joined}.ts` : `./${joined}.ts`;
+}
+
 function resolvePathAlias(
   importPath: string,
   pathMappings: PathMapping,
@@ -77,18 +90,7 @@ function resolvePathAlias(
           join(baseDir, resolvedPath),
         );
 
-        if (
-          !relativePath.endsWith(".ts") && !relativePath.endsWith(".tsx") &&
-          !relativePath.endsWith(".js") && !relativePath.endsWith(".jsx")
-        ) {
-          return relativePath.startsWith(".")
-            ? `${relativePath}.ts`
-            : `./${relativePath}.ts`;
-        }
-
-        return relativePath.startsWith(".")
-          ? relativePath
-          : `./${relativePath}`;
+        return pathWithExtension(relativePath);
       }
     }
   }
@@ -196,13 +198,17 @@ function convertPathAliases(sourceFile: SourceFile): void {
         if (firstArg.getKind() === SyntaxKind.StringLiteral) {
           const importPath = (firstArg as StringLiteral).getLiteralValue();
 
-          // Skip if it's already a relative path or external package
+          // Common external packages that shouldn't be transformed
+          // TODO use package.json to detect external packages
+          if (!importPath.includes("/")) {
+            return;
+          }
+
           if (
-            importPath.startsWith(".") || importPath.startsWith("/") ||
-            !importPath.includes("/") || importPath.includes("node_modules")
-            // Common external packages that shouldn't be transformed
-            // TODO use package.json to detect external packages
+            importPath.startsWith(".") ||
+            !importPath.includes("/")
           ) {
+            firstArg.replaceWithText(`"${pathWithExtension(importPath)}"`);
             return;
           }
 
