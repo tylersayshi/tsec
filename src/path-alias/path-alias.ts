@@ -70,19 +70,13 @@ function resolvePathAlias(
           ? dirname(tsConfigPath)
           : dirname(currentFilePath);
 
-        console.log({
-          currentFilePath,
-          baseDir,
-          resolvedPath,
-          joined: join(baseDir, resolvedPath),
-        });
-        // currentDir is not what we want. we need to use the path of the file
+        const currentDir = dirname(currentFilePath);
+
         const relativePath = relative(
-          currentFilePath,
+          currentDir,
           join(baseDir, resolvedPath),
         );
-        console.log({ relativePath });
-        // Add .ts extension if not present
+
         if (
           !relativePath.endsWith(".ts") && !relativePath.endsWith(".tsx") &&
           !relativePath.endsWith(".js") && !relativePath.endsWith(".jsx")

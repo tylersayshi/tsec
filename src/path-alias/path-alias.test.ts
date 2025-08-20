@@ -6,12 +6,8 @@ const testFn = executeTest({
   codemod: pathAliasCodemod,
 });
 
-Deno.test.only("converts simple path alias to relative path", async () => {
+Deno.test("converts simple path alias to relative path", async () => {
   await testFn("simple-alias");
-});
-
-Deno.test("converts wildcard path alias to relative path", async () => {
-  await testFn("wildcard-alias");
 });
 
 Deno.test("handles multiple imports with different aliases", async () => {

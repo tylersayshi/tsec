@@ -1,7 +1,7 @@
 import { UserService } from "../services/user.ts";
-import { Logger } from "./logger";
+import { Logger } from "../utils/logger";
 import { Config } from "../config/app";
-import { Utils } from "../../utils/helpers";
+import { Utils } from "../utils/helpers";
 
 export class UserController {
   constructor(
