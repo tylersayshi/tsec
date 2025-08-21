@@ -12,7 +12,7 @@ export class App {
   ) {}
 
   async start() {
-    this.logger.info("Starting application");
-    return this.userService.findAll();
+    this.logger.log("Starting app", LogLevel.INFO);
+    await this.authService.initialize();
   }
 }

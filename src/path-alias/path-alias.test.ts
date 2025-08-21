@@ -59,3 +59,6 @@ Deno.test("preserves .js extensions in path aliases", async () => {
 Deno.test("preserves .ts extensions in path aliases", async () => {
   await testFn("ts-extensions");
 });
+
+// TODO handle edge case for path alias to index.ts
+// TODO handle priority collision with `@/*` => `src/*`

@@ -7,6 +7,6 @@ export { Logger } from "@utils/logger";
 export { UserService as UserAPI } from "@services/user";
 export { AuthService as AuthAPI } from "@services/auth";
 
-// Re-export all
+// Wildcard re-exports
 export * from "@services/user";
 export * from "@utils/logger";

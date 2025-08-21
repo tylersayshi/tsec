@@ -4,14 +4,14 @@ import type { DatabaseType } from "../database/types";
 
 import { UserService } from "../services/user";
 
-export class App {
-  constructor(
-    private userService: UserService,
-    private config: ConfigType,
-    private db: DatabaseType,
-  ) {}
+export class UserController {
+  constructor(private userService: UserService) {}
 
-  async createUser(userData: UserType) {
+  async createUser(userData: UserType): Promise<UserType> {
     return this.userService.create(userData);
+  }
+
+  getConfig(): ConfigType {
+    return this.userService.getConfig();
   }
 }

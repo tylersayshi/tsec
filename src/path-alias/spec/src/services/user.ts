@@ -12,6 +12,6 @@ export class UserService {
   }
 
   getConfig() {
-    return { apiUrl: "http://localhost:3000" };
+    return { apiUrl: "http://localhost:3000", port: 3000 };
   }
 }

@@ -9,15 +9,12 @@ import { Logger } from "@utils/logger";
 import { Database } from "@database/connection";
 
 // External packages (should be preserved)
-import express from "express";
-import { z } from "zod";
+import { walk } from "@std/fs";
 
 // Relative imports (should be preserved)
-import { Helper } from "./helper";
-import { Constants } from "../constants";
+import { Utils } from "../utils/helpers";
 
 // Wildcard imports
-import { UserModel } from "@models/*";
 import { ValidationError } from "@types/errors";
 
 // Re-exports
@@ -33,7 +30,7 @@ export class App {
     private authService: AuthService,
     private logger: Logger,
     private db: Database,
-    private helper: Helper,
+    private utils: Utils,
   ) {}
 
   async initialize() {
@@ -42,12 +39,7 @@ export class App {
   }
 
   async createUser(userData: UserType) {
-    const validationSchema = z.object({
-      name: z.string(),
-      email: z.string().email(),
-    });
-
-    const validatedData = validationSchema.parse(userData);
-    return this.userService.create(validatedData);
+    walk("test");
+    return this.userService.create(userData);
   }
 }

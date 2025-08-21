@@ -1,16 +1,20 @@
 import { UserService } from "../services/user";
 
-export class DynamicImporter {
-  async loadModules() {
-    // Dynamic import with path alias
+export class UserController {
+  constructor(private userService: UserService) {}
+
+  async loadUserModule() {
     const UserModule = await import("../modules/user");
+    return new UserModule.default();
+  }
 
-    // Dynamic import with destructuring
+  async loadAuthModule() {
     const { AuthService } = await import("../services/auth");
+    return new AuthService();
+  }
 
-    // Dynamic import for config
+  async loadConfig() {
     const config = await import("../config/app");
-
-    return { UserModule, AuthService, config };
+    return config.default;
   }
 }
