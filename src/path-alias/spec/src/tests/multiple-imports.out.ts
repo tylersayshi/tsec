@@ -1,8 +1,8 @@
-import { UserService } from "../services/user.ts";
-import { AuthService } from "../services/auth.ts";
-import { Logger } from "../utils/logger.ts";
-import { Config } from "../config/app.ts";
-import { Database } from "../database/connection.ts";
+import { UserService } from "../services/user";
+import { AuthService } from "../services/auth";
+import { Logger } from "../utils/logger";
+import { Config } from "../config/app";
+import { Database } from "../database/connection";
 
 export class App {
   constructor(

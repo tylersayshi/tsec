@@ -51,3 +51,11 @@ Deno.test("handles dynamic imports", async () => {
 Deno.test("comprehensive path alias transformation", async () => {
   await testFn("comprehensive");
 });
+
+Deno.test("preserves .js extensions in path aliases", async () => {
+  await testFn("js-extensions");
+});
+
+Deno.test("preserves .ts extensions in path aliases", async () => {
+  await testFn("ts-extensions");
+});

@@ -1,17 +1,17 @@
-import type { UserType } from "../types/user.ts";
-import type { ConfigType } from "../config/types.ts";
-import type { DatabaseType } from "../database/types.ts";
+import type { UserType } from "../types/user";
+import type { ConfigType } from "../config/types";
+import type { DatabaseType } from "../database/types";
 
-import { UserService } from "../services/user.ts";
+import { UserService } from "../services/user";
 
-export class UserController {
-  constructor(private userService: UserService) {}
+export class App {
+  constructor(
+    private userService: UserService,
+    private config: ConfigType,
+    private db: DatabaseType,
+  ) {}
 
-  async createUser(userData: UserType): Promise<UserType> {
+  async createUser(userData: UserType) {
     return this.userService.create(userData);
-  }
-
-  getConfig(): ConfigType {
-    return this.userService.getConfig();
   }
 }

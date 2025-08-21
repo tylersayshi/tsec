@@ -1,4 +1,4 @@
-import { UserService } from "../services/user.ts";
+import { UserService } from "../services/user";
 import { Logger } from "../utils/logger";
 import { Config } from "../config/app";
 import { Utils } from "../utils/helpers";

@@ -1,7 +1,7 @@
-import UserController from "../controllers/user.ts";
-import { UserService } from "../services/user.ts";
-import { AuthConfig, AuthService } from "../services/auth.ts";
-import Logger, { LogLevel } from "../utils/logger.ts";
+import UserController from "../controllers/user";
+import { UserService } from "../services/user";
+import { AuthConfig, AuthService } from "../services/auth";
+import Logger, { LogLevel } from "../utils/logger";
 
 export class App {
   constructor(
@@ -12,7 +12,7 @@ export class App {
   ) {}
 
   async start() {
-    this.logger.log("Starting app", LogLevel.INFO);
-    await this.authService.initialize();
+    this.logger.info("Starting application");
+    return this.userService.findAll();
   }
 }

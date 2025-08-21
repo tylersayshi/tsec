@@ -1,8 +1,6 @@
-import { UserService } from "../services/user.ts";
-import express from "express";
-import { Request, Response } from "express";
-import { z } from "zod";
-import { Logger } from "../utils/logger.ts";
+import { UserService } from "../services/user";
+import { walk } from "@std/fs";
+import { Logger } from "../utils/logger";
 
 export class UserController {
   constructor(
@@ -10,12 +8,8 @@ export class UserController {
     private logger: Logger,
   ) {}
 
-  async getUser(req: Request, res: Response) {
-    const schema = z.object({
-      id: z.string(),
-    });
-
-    const { id } = schema.parse(req.params);
+  async getUser(id: string) {
+    walk("test");
     this.logger.info(`Fetching user ${id}`);
     return this.userService.findById(id);
   }

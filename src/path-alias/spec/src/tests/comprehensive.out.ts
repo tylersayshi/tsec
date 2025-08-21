@@ -17,15 +17,15 @@ import { Helper } from "./helper";
 import { Constants } from "../constants";
 
 // Wildcard imports
-import { UserModel } from "../models/index.ts";
-import { ValidationError } from "../types/errors.ts";
+import { UserModel } from "../models/index";
+import { ValidationError } from "../types/errors";
 
 // Re-exports
-export { UserService } from "../services/user.ts";
-export { AuthService } from "../services/auth.ts";
+export { UserService } from "../services/user";
+export { AuthService } from "../services/auth";
 
 // Default imports
-import UserController from "../controllers/user.ts";
+import UserController from "../controllers/user";
 
 export class App {
   constructor(

@@ -1,15 +1,15 @@
-import { UserService } from "@services/user";
-import { walk } from "@std/fs";
-import { Logger } from "@utils/logger";
+import { UserService } from "../services/user.ts";
+import { Logger } from "../utils/logger.ts";
+import { Config } from "../config/app.ts";
 
 export class UserController {
   constructor(
     private userService: UserService,
     private logger: Logger,
+    private config: Config,
   ) {}
 
   async getUser(id: string) {
-    walk("test");
     this.logger.info(`Fetching user ${id}`);
     return this.userService.findById(id);
   }

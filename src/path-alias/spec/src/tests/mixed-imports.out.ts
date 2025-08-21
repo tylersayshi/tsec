@@ -1,28 +1,28 @@
 // Path aliases
-import { UserService } from "../services/user.ts";
-import { Logger } from "../utils/logger.ts";
+import { UserService } from "../services/user";
+import { Logger } from "../utils/logger";
 
-// External packages
-import express from "express";
-import { z } from "zod";
+// External package import (should be preserved)
+import { walk } from "@std/fs";
 
-// Relative imports
-import { Helper } from "./helper";
-import { Constants } from "../constants";
+// Relative import (should be preserved)
+import { Utils } from "../utils/helpers";
 
 // Type imports
-import type { UserType } from "../types/user.ts";
+import type { UserType } from "../types/user";
+
+// Default import
+import UserController from "../controllers/user";
 
 export class App {
   constructor(
     private userService: UserService,
     private logger: Logger,
-    private helper: Helper,
+    private utils: Utils,
   ) {}
 
   async start() {
     this.logger.info("Starting app");
-    const app = express();
-    return app;
+    walk("test");
   }
 }
