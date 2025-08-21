@@ -37,9 +37,8 @@ import Bar = container.Bar;
 
 **Additional mods**
 
-- [ ] path alias rewrite
-- [ ] relativePath rewrite from .js, .cjs, .mjs, or from no extension (.ts,
-      .cts, and .mts can stay the same)
+- [x] path alias rewrite
+- [ ] update file extensions
 
 **Ready for migrating repo's**
 
