@@ -11,7 +11,8 @@
       "@types/*": ["src/types/*"],
       "@models/*": ["src/models/*"],
       "@controllers/*": ["src/controllers/*"],
-      "@modules/*": ["src/modules/*"]
+      "@modules/*": ["src/modules/*"],
+      "@/*": ["src/*"]
     }
   }
 }
