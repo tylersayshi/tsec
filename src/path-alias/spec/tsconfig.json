@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "module": "es2020",
+    "moduleResolution": "node",
     "paths": {
       "@services/*": ["src/services/*"],
       "@utils/*": ["src/utils/*"],

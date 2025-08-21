@@ -1,6 +1,5 @@
 import { Project, SourceFile, StringLiteral, SyntaxKind } from "ts-morph";
 import { dirname, join, relative } from "@std/path";
-import { existsSync } from "@std/fs/exists";
 
 const project = new Project();
 
@@ -41,19 +40,6 @@ function findTsConfigPath(filePath: string): string | null {
   return null;
 }
 
-function pathWithExtension(path: string): string {
-  const finalPath = path.split("/");
-  const lastPart = finalPath.at(-1);
-  if (
-    lastPart?.includes(".") &&
-    (!lastPart.endsWith(".ts") || !lastPart.endsWith(".tsx"))
-  ) {
-    finalPath[finalPath.length - 1] = lastPart.replace(/\./g, "") + ".ts";
-  }
-  const joined = finalPath.join("/");
-  return joined.startsWith(".") ? `${joined}.ts` : `./${joined}.ts`;
-}
-
 function resolvePathAlias(
   importPath: string,
   pathMappings: PathMapping,
@@ -90,30 +76,14 @@ function resolvePathAlias(
           join(baseDir, resolvedPath),
         );
 
-        return pathWithExtension(relativePath);
+        return relativePath.startsWith(".")
+          ? relativePath
+          : `./${relativePath}`;
       }
     }
   }
 
   return null;
-}
-
-function _getPackageJsonDependencyNames(
-  filePath: string,
-): string[] {
-  const packageJsonPath = join(dirname(filePath), "package.json");
-  if (!existsSync(packageJsonPath)) {
-    throw new Error(
-      "package.json not found. This is required to detect external package dependencies.",
-    );
-  }
-
-  const packageJson = JSON.parse(Deno.readTextFileSync(packageJsonPath));
-  const allDeps = {
-    ...packageJson.dependencies,
-    ...packageJson.devDependencies,
-  };
-  return Object.keys(allDeps);
 }
 
 function convertPathAliases(sourceFile: SourceFile): void {
@@ -123,7 +93,6 @@ function convertPathAliases(sourceFile: SourceFile): void {
   const pathMappings = parseTsConfigPaths(tsConfigPath);
   if (Object.keys(pathMappings).length === 0) return;
 
-  // Handle import declarations
   const importDeclarations = sourceFile.getImportDeclarations();
 
   importDeclarations.forEach((importDecl) => {
@@ -133,10 +102,8 @@ function convertPathAliases(sourceFile: SourceFile): void {
       const importPath = (moduleSpecifier as StringLiteral).getLiteralValue();
 
       if (
-        importPath.startsWith(".") || importPath.startsWith("/") ||
-        !importPath.includes("/") || importPath.includes("node_modules")
-        // Common external packages that shouldn't be transformed
-        // TODO use package.json to detect external packages
+        importPath.startsWith(".") ||
+        !importPath.includes("/")
       ) {
         return;
       }
@@ -163,12 +130,9 @@ function convertPathAliases(sourceFile: SourceFile): void {
     ) {
       const exportPath = (moduleSpecifier as StringLiteral).getLiteralValue();
 
-      // Skip if it's already a relative path or external package
       if (
-        exportPath.startsWith(".") || exportPath.startsWith("/") ||
-        !exportPath.includes("/") || exportPath.includes("node_modules")
-        // Common external packages that shouldn't be transformed
-        // TODO use package.json to detect external packages
+        exportPath.startsWith(".") ||
+        !exportPath.includes("/")
       ) {
         return;
       }
@@ -198,17 +162,10 @@ function convertPathAliases(sourceFile: SourceFile): void {
         if (firstArg.getKind() === SyntaxKind.StringLiteral) {
           const importPath = (firstArg as StringLiteral).getLiteralValue();
 
-          // Common external packages that shouldn't be transformed
-          // TODO use package.json to detect external packages
-          if (!importPath.includes("/")) {
-            return;
-          }
-
           if (
             importPath.startsWith(".") ||
             !importPath.includes("/")
           ) {
-            firstArg.replaceWithText(`"${pathWithExtension(importPath)}"`);
             return;
           }
 

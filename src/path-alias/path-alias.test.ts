@@ -4,6 +4,8 @@ import { pathAliasCodemod } from "./path-alias.ts";
 const testFn = executeTest({
   testDir: "src/path-alias/spec/src/tests/",
   codemod: pathAliasCodemod,
+  // flag to ignore missing extensions
+  checkTsOptions: ["--unstable-sloppy-imports"],
 });
 
 Deno.test("converts simple path alias to relative path", async () => {

@@ -1,6 +1,4 @@
 import { assertEquals } from "@std/assert/equals";
-import { exists } from "@std/fs/exists";
-import { join } from "@std/path/join";
 import { spawn } from "node:child_process";
 
 /**
@@ -8,9 +6,12 @@ import { spawn } from "node:child_process";
  * @example
  * await checkTsFile("src/index.ts");
  */
-async function checkTsFile(filePath: string): Promise<void> {
+async function checkTsFile(
+  filePath: string,
+  options: string[] = [],
+): Promise<void> {
   await new Promise((resolve, reject) => {
-    const tsc = spawn("deno", ["check", filePath]);
+    const tsc = spawn("deno", ["check", ...options, filePath]);
 
     // deno-lint-ignore no-explicit-any
     tsc.stderr.on("data", (data: any) => {
@@ -58,7 +59,9 @@ class TestUtils {
   private tempFiles = new Set<string>();
   private codemod: (filePath: string) => void;
 
-  constructor(codemod: (filePath: string) => void) {
+  constructor(
+    codemod: (filePath: string) => void,
+  ) {
     this.codemod = codemod;
   }
 
@@ -89,8 +92,9 @@ class TestUtils {
 export const executeTest = (config: {
   testDir: `${string}/`;
   codemod: (filePath: string) => void;
+  checkTsOptions?: string[];
 }) => {
-  const { testDir, codemod } = config;
+  const { testDir, codemod, checkTsOptions } = config;
   const utils = new TestUtils(codemod);
 
   return async (
@@ -109,7 +113,7 @@ export const executeTest = (config: {
 
       await utils.createTestFile(tmpFile, originalContent);
       const result = await utils.runAndReadCodemod(tmpFile);
-      await checkTsFile(tmpFile);
+      await checkTsFile(tmpFile, checkTsOptions);
       assertEquals(result, expectedOutput);
     } finally {
       await utils.cleanup();
