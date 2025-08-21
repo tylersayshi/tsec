@@ -52,7 +52,8 @@ function resolvePathAlias(
 
     for (const target of targetArray) {
       // Create regex pattern for the alias
-      const aliasPattern = alias.replace("*", "([^/]+)");
+      // Make "*" match across path segments (TS path alias wildcard matches slashes)
+      const aliasPattern = alias.replace("*", "(.+)");
       const regex = new RegExp(`^${aliasPattern}$`);
 
       if (regex.test(importPath)) {

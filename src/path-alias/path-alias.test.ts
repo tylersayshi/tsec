@@ -60,7 +60,7 @@ Deno.test("preserves .ts extensions in path aliases", async () => {
   await testFn("ts-extensions");
 });
 
-Deno.test.only(
+Deno.test(
   "resolves alias priority collision for @/* to src/*",
   async () => {
     await testFn("alias-priority-collision");
