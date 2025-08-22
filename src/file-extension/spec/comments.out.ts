@@ -1,6 +1,6 @@
 // This is a comment about external packages
-import express from "express";
-import { Request, Response } from "express";
+import { assertEquals } from "@std/assert";
+import { join } from "@std/path";
 
 // Local imports with .js should be converted to .ts
 import { User } from "./models/user.ts";
@@ -18,13 +18,13 @@ export class CommentsTest {
     private userService: User,
     private db: Database,
     private logger: Logger,
-    private config: Config,
+    private config: typeof Config,
     private helpers: Helpers,
   ) {}
 
   async testComments() {
     // This comment should be preserved
     this.logger.info("Testing comment preservation");
-    return await this.userService.findById("123");
+    return this.userService.email;
   }
 }

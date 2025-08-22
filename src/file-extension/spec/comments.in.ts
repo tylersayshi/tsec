@@ -1,6 +1,6 @@
 // This is a comment about external packages
-import express from "express";
-import { Request, Response } from "express";
+import { assertEquals } from "@std/assert";
+import { join } from "@std/path";
 
 // Local imports with .js should be converted to .ts
 import { User } from "./models/user.js";

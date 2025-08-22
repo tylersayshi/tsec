@@ -1,8 +1,8 @@
 // External packages should remain unchanged
-import express from "express";
-import { Request, Response } from "express";
-import axios from "axios";
-import { z } from "zod";
+import { assertEquals } from "@std/assert";
+import { join } from "@std/path";
+import { exists } from "@std/fs";
+import { Project } from "ts-morph";
 
 // Local imports with .js should be converted to .ts
 import { User } from "./models/user.ts";
@@ -49,12 +49,12 @@ export class ComprehensiveTest {
   async testComprehensive() {
     this.logger.info("Testing comprehensive file extension transformation");
 
-    const schema = z.object({ name: z.string() });
+    const project = new Project();
     const user = await this.userService.findById("123");
 
     return {
       user,
-      schema,
+      project,
       config: this.config,
       helpers: this.helpers.formatString("test"),
     };

@@ -1,37 +1,10 @@
-import { assertEquals } from "@std/assert/equals";
+import { executeTest } from "../utils/test.ts";
 import { fileExtensionCodemod } from "./file-extension.ts";
 
-// Custom test function that skips typechecking
-async function testFileExtension(testSlug: string) {
-  const testDir = "src/file-extension/spec/";
-  const testFile = testDir + testSlug + ".in.ts";
-  const outFile = testDir + testSlug + ".out.ts";
-  const tmpFile = testDir + testSlug + ".modded.ts";
-
-  try {
-    const originalContent = await Deno.readTextFile(testFile);
-    const expectedOutput = await Deno.readTextFile(outFile);
-
-    // Create temporary file
-    await Deno.writeTextFile(tmpFile, originalContent);
-
-    // Run codemod
-    fileExtensionCodemod(tmpFile);
-
-    // Read result
-    const result = await Deno.readTextFile(tmpFile);
-
-    // Compare with expected output
-    assertEquals(result, expectedOutput);
-  } finally {
-    // Cleanup
-    try {
-      await Deno.remove(tmpFile);
-    } catch {
-      // Ignore if file doesn't exist
-    }
-  }
-}
+const testFileExtension = executeTest({
+  testDir: "src/file-extension/spec/",
+  codemod: fileExtensionCodemod,
+});
 
 Deno.test("converts .js extensions to .ts", async () => {
   await testFileExtension("js-to-ts");

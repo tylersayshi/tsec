@@ -1,7 +1,7 @@
 // External packages should remain unchanged
-import express from "express";
-import { Request, Response } from "express";
-import axios from "axios";
+import { assertEquals } from "@std/assert";
+import { join } from "@std/path";
+import { exists } from "@std/fs";
 
 // Local imports with .js should be converted to .ts
 import { User } from "./models/user.ts";
@@ -25,7 +25,7 @@ export class AppController {
     private types: Types,
   ) {}
 
-  async handleRequest(req: Request, res: Response) {
+  async handleRequest(req: any, res: any) {
     this.logger.info("Handling request", { url: req.url });
     const user = await this.userService.findById(req.params.id);
     res.json(user);

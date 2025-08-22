@@ -1,10 +1,8 @@
 // External packages should remain unchanged
-import express from "express";
-import { Request, Response } from "express";
-import axios from "axios";
-import { z } from "zod";
-import { PrismaClient } from "@prisma/client";
-import { createClient } from "@supabase/supabase-js";
+import { assertEquals } from "@std/assert";
+import { join } from "@std/path";
+import { exists } from "@std/fs";
+import { Project } from "ts-morph";
 
 // Local imports should be processed
 import { User } from "./models/user.ts";
@@ -17,10 +15,10 @@ export class ExternalPackageTest {
   ) {}
 
   async testExternalPackages() {
-    const client = new PrismaClient();
-    const supabase = createClient("url", "key");
-    const schema = z.object({ name: z.string() });
+    const project = new Project();
+    const path = join("test", "file.ts");
+    const fileExists = await exists(path);
 
-    return { client, supabase, schema };
+    return { project, path, fileExists };
   }
 }
