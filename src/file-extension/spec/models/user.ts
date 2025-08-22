@@ -2,6 +2,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  findById(id: string): Promise<User | null>;
 }
 
 export class UserService {
@@ -9,3 +10,5 @@ export class UserService {
     return { id, name: "Test User", email: "test@example.com" };
   }
 }
+
+export const User = UserService;

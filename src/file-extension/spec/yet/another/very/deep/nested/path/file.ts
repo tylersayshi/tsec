@@ -8,3 +8,5 @@ export class YetAnotherDeepClass {
     return { key: "yet-another", metadata: { depth: "very deep" } };
   }
 }
+
+export const YetAnother = YetAnotherDeepClass;

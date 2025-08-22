@@ -8,3 +8,5 @@ export class DeepNestedClass {
     return { id: "deep", value: "nested" };
   }
 }
+
+export const DeepNested = DeepNestedClass;

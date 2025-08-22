@@ -19,3 +19,5 @@ export const Config: AppConfig = {
     name: "test_db",
   },
 };
+
+export type ConfigType = typeof Config;

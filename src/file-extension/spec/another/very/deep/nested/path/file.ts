@@ -8,3 +8,5 @@ export class AnotherDeepClass {
     return { name: "another", description: "deep nested file" };
   }
 }
+
+export const AnotherDeep = AnotherDeepClass;
