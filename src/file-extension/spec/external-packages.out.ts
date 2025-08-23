@@ -6,12 +6,10 @@ import { Project } from "ts-morph";
 
 // Local imports should be processed
 import { User } from "./models/user.ts";
-import { Database } from "../database/connection.ts";
 
 export class ExternalPackageTest {
   constructor(
     private userService: User,
-    private db: Database,
   ) {}
 
   async testExternalPackages() {

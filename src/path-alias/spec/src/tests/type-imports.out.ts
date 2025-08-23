@@ -1,6 +1,5 @@
 import type { UserType } from "../types/user";
 import type { ConfigType } from "../config/types";
-import type { DatabaseType as _DatabaseType } from "../database/types";
 
 import { UserService } from "../services/user";
 

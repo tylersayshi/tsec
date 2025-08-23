@@ -5,7 +5,6 @@ import { exists } from "@std/fs";
 
 // Local imports with .js should be converted to .ts
 import { User } from "./models/user.ts";
-import { Database } from "../database/connection.ts";
 
 // Local imports with no extension should get .ts added
 import { AuthService } from "./services/auth.ts";
@@ -17,7 +16,6 @@ import { Types } from "./types/user.ts";
 export class AppController {
   constructor(
     private userService: User,
-    private db: Database,
     private auth: AuthService,
     private logger: Logger,
     private types: Types,

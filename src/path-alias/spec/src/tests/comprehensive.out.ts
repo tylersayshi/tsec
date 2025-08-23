@@ -6,7 +6,6 @@ import type { ConfigType as _ConfigType } from "../config/types";
 import { UserService } from "../services/user";
 import { AuthService } from "../services/auth";
 import { Logger } from "../utils/logger";
-import { Database } from "../database/connection";
 
 // External packages (should be preserved)
 import { walk } from "@std/fs";
@@ -29,7 +28,6 @@ export class App {
     private userService: UserService,
     private authService: AuthService,
     private logger: Logger,
-    private db: Database,
     private utils: Utils,
   ) {}
 

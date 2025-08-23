@@ -4,7 +4,6 @@ import { join } from "@std/path";
 
 // Local imports with .js should be converted to .ts
 import { User } from "./models/user.js";
-import { Database } from "../database/connection.js";
 
 // Local imports with no extension should get .ts added
 import { Logger } from "./utils/logger";
@@ -16,7 +15,6 @@ import { Helpers } from "./utils/helpers.ts";
 export class CommentsTest {
   constructor(
     private userService: InstanceType<typeof User>,
-    private db: Database,
     private logger: Logger,
     private config: typeof Config,
     private helpers: Helpers,

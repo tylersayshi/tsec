@@ -1,5 +1,4 @@
 import { User } from "./models/user.js";
-import { Database } from "../database/connection.js";
 import { Logger } from "./utils/logger";
 import { Config } from "./config/app";
 import { Types } from "./types/user";
@@ -18,7 +17,6 @@ import { YetAnother } from "./yet/another/very/deep/nested/path/file.ts";
 export class ComplexPathsTest {
   constructor(
     private user: InstanceType<typeof User>,
-    private db: Database,
     private logger: Logger,
     private config: typeof Config,
     private types: Types,
