@@ -5,17 +5,20 @@ export interface StringHelperOptions {
 }
 
 export class StringUtils {
-  static format(input: string, options: Partial<StringHelperOptions> = {}): string {
+  static format(
+    input: string,
+    options: Partial<StringHelperOptions> = {},
+  ): string {
     let result = input;
-    
+
     if (options.trim) {
       result = result.trim();
     }
-    
+
     if (options.lowercase) {
       result = result.toLowerCase();
     }
-    
+
     return result;
   }
 
