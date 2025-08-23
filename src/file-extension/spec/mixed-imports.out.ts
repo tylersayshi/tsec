@@ -12,7 +12,6 @@ import { AuthService } from "./services/auth.ts";
 import { Logger } from "./utils/logger.ts";
 
 // Local imports with .ts should remain unchanged
-import { Config } from "./config/app.ts";
 import { Types } from "./types/user.ts";
 
 export class AppController {
@@ -21,13 +20,11 @@ export class AppController {
     private db: Database,
     private auth: AuthService,
     private logger: Logger,
-    private config: Config,
     private types: Types,
   ) {}
 
   async handleRequest(req: any, res: any) {
     this.logger.info("Handling request", { url: req.url });
-    const user = await this.userService.findById(req.params.id);
-    res.json(user);
+    res.json(null);
   }
 }

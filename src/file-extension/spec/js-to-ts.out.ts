@@ -13,6 +13,6 @@ export class UserController {
 
   async getUser(id: string) {
     this.logger.info("Getting user", { id });
-    return await this.userService.findById(id);
+    return await this.userService.email;
   }
 }

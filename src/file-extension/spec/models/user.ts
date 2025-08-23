@@ -2,7 +2,6 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  findById(id: string): Promise<User | null>;
 }
 
 export class UserService {
