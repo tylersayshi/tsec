@@ -1,6 +1,6 @@
 export interface YetAnotherDeepType {
   key: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
 }
 
 export class YetAnotherDeepClass {

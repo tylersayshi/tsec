@@ -1,10 +1,15 @@
 export class UserService {
-  async findById(id: string) {
-    return { id, name: "Test User" };
+  findById(id: string) {
+    return Promise.resolve({ id, name: "Test User" });
   }
 
-  async create(userData: any) {
-    return { ...userData, id: "123" };
+  create(userData: Record<string, unknown>) {
+    return Promise.resolve({
+      id: "123",
+      name: userData.name as string || "Default Name",
+      email: userData.email as string || "default@example.com",
+      ...userData,
+    });
   }
 
   test() {

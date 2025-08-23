@@ -1,5 +1,5 @@
 export class Database {
-  async connect() {
-    return "connected";
+  connect() {
+    return Promise.resolve("connected");
   }
 }

@@ -3,9 +3,9 @@ import { AuthService } from "@services/auth";
 import { Logger } from "@utils/logger";
 import { Database } from "@database/connection";
 import { Config } from "@config/app";
-import { ValidationError } from "@types/errors";
-import { UserModel } from "@models/user";
-import { AuthModel } from "@models/auth";
+import { ValidationError as _ValidationError } from "@types/errors";
+import { UserModel as _UserModel } from "@models/user";
+import { AuthModel as _AuthModel } from "@models/auth";
 
 export class App {
   constructor(

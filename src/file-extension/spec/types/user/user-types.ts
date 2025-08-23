@@ -3,7 +3,7 @@ export type UserStatus = "active" | "inactive" | "pending";
 export interface UserMetadata {
   lastLogin: Date;
   loginCount: number;
-  preferences: Record<string, any>;
+  preferences: Record<string, unknown>;
 }
 
 export interface UserTypes {

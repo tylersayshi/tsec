@@ -3,7 +3,7 @@ export class UserModel {
   name: string;
   email: string;
 
-  constructor(data: any) {
+  constructor(data: Record<string, string>) {
     this.id = data.id;
     this.name = data.name;
     this.email = data.email;

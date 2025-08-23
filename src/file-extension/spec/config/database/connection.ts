@@ -9,11 +9,13 @@ export interface DatabaseConfig {
 export class Connection {
   constructor(private config: DatabaseConfig) {}
 
-  async connect(): Promise<void> {
+  connect(): Promise<void> {
     console.log("Database connected");
+    return Promise.resolve();
   }
 
-  async disconnect(): Promise<void> {
+  disconnect(): Promise<void> {
     console.log("Database disconnected");
+    return Promise.resolve();
   }
 }

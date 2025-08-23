@@ -6,11 +6,11 @@ export interface AuthConfig {
 export class AuthService {
   constructor(private config: AuthConfig) {}
 
-  async login(email: string, password: string): Promise<string> {
-    return "mock-jwt-token";
+  login(_email: string, _password: string): Promise<string> {
+    return Promise.resolve("mock-jwt-token");
   }
 
-  async validateToken(token: string): Promise<boolean> {
-    return token === "mock-jwt-token";
+  validateToken(token: string): Promise<boolean> {
+    return Promise.resolve(token === "mock-jwt-token");
   }
 }

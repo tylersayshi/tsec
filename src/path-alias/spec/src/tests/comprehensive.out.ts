@@ -1,6 +1,6 @@
 // Type-only imports
 import type { UserType } from "../types/user";
-import type { ConfigType } from "../config/types";
+import type { ConfigType as _ConfigType } from "../config/types";
 
 // Regular imports with path aliases
 import { UserService } from "../services/user";
@@ -15,14 +15,14 @@ import { walk } from "@std/fs";
 import { Utils } from "../utils/helpers";
 
 // Wildcard imports
-import { ValidationError } from "../types/errors";
+import { ValidationError as _ValidationError } from "../types/errors";
 
 // Re-exports
 export { UserService } from "../services/user";
 export { AuthService } from "../services/auth";
 
 // Default imports
-import UserController from "../controllers/user";
+import _UserController from "../controllers/user";
 
 export class App {
   constructor(
@@ -38,7 +38,7 @@ export class App {
     await this.db.connect();
   }
 
-  async createUser(userData: UserType) {
+  createUser(userData: UserType) {
     walk("test");
     return this.userService.create(userData);
   }

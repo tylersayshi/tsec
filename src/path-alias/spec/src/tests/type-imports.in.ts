@@ -1,13 +1,13 @@
 import type { UserType } from "@types/user";
 import type { ConfigType } from "@config/types";
-import type { DatabaseType } from "@database/types";
+import type { DatabaseType as _DatabaseType } from "@database/types";
 
 import { UserService } from "@services/user";
 
 export class UserController {
   constructor(private userService: UserService) {}
 
-  async createUser(userData: UserType): Promise<UserType> {
+  createUser(userData: UserType): Promise<UserType> {
     return this.userService.create(userData);
   }
 

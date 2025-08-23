@@ -9,7 +9,7 @@ export class UserController {
     private config: Config,
   ) {}
 
-  async getUser(id: string) {
+  getUser(id: string) {
     this.logger.info(`Fetching user ${id}`);
     return this.userService.findById(id);
   }

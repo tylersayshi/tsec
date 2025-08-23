@@ -8,7 +8,7 @@ export class UserController {
     private logger: Logger,
   ) {}
 
-  async getUser(id: string) {
+  getUser(id: string) {
     walk("test");
     this.logger.info(`Fetching user ${id}`);
     return this.userService.findById(id);

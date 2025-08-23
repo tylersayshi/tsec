@@ -11,7 +11,7 @@ export class UserController {
     private utils: Utils,
   ) {}
 
-  async getUser(id: string) {
+  getUser(id: string) {
     this.logger.info(`Fetching user ${id}`);
     return this.userService.findById(id);
   }

@@ -6,11 +6,11 @@ export interface AuthSettings {
 export class AuthService {
   constructor(private settings: AuthSettings) {}
 
-  async authenticate(token: string): Promise<boolean> {
-    return token === "valid-token";
+  authenticate(token: string): Promise<boolean> {
+    return Promise.resolve(token === "valid-token");
   }
 
-  async generateToken(userId: string): Promise<string> {
-    return `token-${userId}`;
+  generateToken(userId: string): Promise<string> {
+    return Promise.resolve(`token-${userId}`);
   }
 }

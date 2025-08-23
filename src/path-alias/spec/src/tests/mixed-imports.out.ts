@@ -9,10 +9,10 @@ import { walk } from "@std/fs";
 import { Utils } from "../utils/helpers";
 
 // Type imports
-import type { UserType } from "../types/user";
+import type { UserType as _UserType } from "../types/user";
 
 // Default import
-import UserController from "../controllers/user";
+import _UserController from "../controllers/user";
 
 export class App {
   constructor(
@@ -21,8 +21,9 @@ export class App {
     private utils: Utils,
   ) {}
 
-  async start() {
+  start() {
     this.logger.info("Starting app");
     walk("test");
+    return Promise.resolve();
   }
 }

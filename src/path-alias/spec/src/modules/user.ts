@@ -1,7 +1,7 @@
 export default class UserModule {
   constructor() {}
 
-  async getUser(id: string) {
-    return { id, name: "Test User" };
+  getUser(id: string) {
+    return Promise.resolve({ id, name: "Test User" });
   }
 }

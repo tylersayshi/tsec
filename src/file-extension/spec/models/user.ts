@@ -5,8 +5,12 @@ export interface User {
 }
 
 export class UserService {
-  async findById(id: string): Promise<User | null> {
-    return { id, name: "Test User", email: "test@example.com" };
+  findById(id: string): Promise<User | null> {
+    return Promise.resolve({
+      id,
+      name: "Test User",
+      email: "test@example.com",
+    });
   }
 }
 

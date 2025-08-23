@@ -1,10 +1,10 @@
 export class AuthService {
-  async authenticate(credentials: any) {
-    return { token: "test-token" };
+  authenticate(_credentials: unknown) {
+    return Promise.resolve({ token: "test-token" });
   }
 
-  async initialize() {
-    return "initialized";
+  initialize() {
+    return Promise.resolve("initialized");
   }
 }
 
