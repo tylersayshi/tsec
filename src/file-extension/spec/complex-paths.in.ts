@@ -18,11 +18,11 @@ import { YetAnother } from "./yet/another/very/deep/nested/path/file.ts";
 
 export class ComplexPathsTest {
   constructor(
-    private user: User,
+    private user: InstanceType<typeof User>,
     private db: Database,
     private auth: AuthService,
     private logger: Logger,
-    private config: Config,
+    private config: typeof Config,
     private types: Types,
     private helpers: Helpers,
     private constants: Constants,
@@ -32,9 +32,9 @@ export class ComplexPathsTest {
     private userService: UserService,
     private authConfig: AuthConfig,
     private loggerConfig: LoggerConfig,
-    private deepNested: DeepNested,
-    private anotherDeep: AnotherDeep,
-    private yetAnother: YetAnother,
+    private deepNested: typeof DeepNested,
+    private anotherDeep: typeof AnotherDeep,
+    private yetAnother: typeof YetAnother,
   ) {}
 
   async testComplexPaths() {

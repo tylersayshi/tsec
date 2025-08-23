@@ -15,10 +15,10 @@ import { Helpers } from "./utils/helpers.ts";
 
 export class CommentsTest {
   constructor(
-    private userService: User,
+    private userService: InstanceType<typeof User>,
     private db: Database,
     private logger: Logger,
-    private config: Config,
+    private config: typeof Config,
     private helpers: Helpers,
   ) {}
 

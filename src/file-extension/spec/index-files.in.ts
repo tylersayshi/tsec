@@ -7,11 +7,11 @@ import { Types } from "./types/index.ts";
 
 export class IndexFileTest {
   constructor(
-    private userService: User,
+    private userService: InstanceType<typeof User>,
     private db: Database,
     private auth: AuthService,
     private logger: Logger,
-    private config: Config,
+    private config: typeof Config,
     private types: Types,
   ) {}
 

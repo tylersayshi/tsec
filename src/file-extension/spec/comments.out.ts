@@ -15,7 +15,7 @@ import { Helpers } from "./utils/helpers.ts";
 
 export class CommentsTest {
   constructor(
-    private userService: User,
+    private userService: InstanceType<typeof User>,
     private db: Database,
     private logger: Logger,
     private config: typeof Config,
@@ -25,6 +25,6 @@ export class CommentsTest {
   async testComments() {
     // This comment should be preserved
     this.logger.info("Testing comment preservation");
-    return this.userService.email;
+    return await this.userService.findById("123");
   }
 }

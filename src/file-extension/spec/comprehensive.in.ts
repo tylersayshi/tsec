@@ -30,11 +30,11 @@ import { LoggerConfig } from "./config/logger/logger-config.ts";
 
 export class ComprehensiveTest {
   constructor(
-    private user: User,
+    private user: InstanceType<typeof User>,
     private db: Database,
     private auth: AuthService,
     private logger: Logger,
-    private config: Config,
+    private config: typeof Config,
     private types: Types,
     private helpers: Helpers,
     private constants: Constants,

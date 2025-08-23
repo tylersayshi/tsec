@@ -1,19 +1,20 @@
+import { UserService } from "./models/user.js";
 import type { User } from "./models/user.js";
 import type { Database } from "../database/connection";
 import type { AuthService } from "../../services/auth.ts";
 import type { Logger } from "./utils/logger";
-import type { Config } from "./config/app.ts";
+import type { AppConfig as Config } from "./config/app.ts";
 
 export class TypeImportTest {
   constructor(
-    private userService: User,
+    private userService: UserService,
     private db: Database,
     private auth: AuthService,
     private logger: Logger,
     private config: Config,
   ) {}
 
-  async testTypeImports(): Promise<User> {
+  async testTypeImports(): Promise<User | null> {
     this.logger.info("Testing type-only imports");
     return await this.userService.findById("123");
   }

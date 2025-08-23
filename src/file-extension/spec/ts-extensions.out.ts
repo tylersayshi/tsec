@@ -7,11 +7,11 @@ import { Types } from "./types/user.ts";
 
 export class TsExtensionTest {
   constructor(
-    private userService: User,
+    private userService: InstanceType<typeof User>,
     private db: Database,
     private auth: AuthService,
     private logger: Logger,
-    private config: Config,
+    private config: typeof Config,
     private types: Types,
   ) {}
 
