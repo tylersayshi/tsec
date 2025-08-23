@@ -35,13 +35,6 @@ import Bar = container.Bar;
 
 ## TODO
 
-**Additional mods**
-
-- [x] path alias rewrite
-- [ ] update file extensions
-
-**Ready for migrating repo's**
-
 - [ ] Handle multiple files with glob input
 - [ ] Write a cli for running the codemod with options for picking which
       transformations to run on
