@@ -11,8 +11,7 @@ export class App {
     private config: Config,
   ) {}
 
-  async start() {
+  start() {
     this.logger.info("Starting application");
-    await this.db.connect();
   }
 }

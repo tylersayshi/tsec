@@ -31,9 +31,8 @@ export class App {
     private utils: Utils,
   ) {}
 
-  async initialize() {
+  initialize() {
     this.logger.info("Initializing application");
-    await this.db.connect();
   }
 
   createUser(userData: UserType) {
