@@ -7,7 +7,6 @@ import { Project } from "ts-morph";
 // Local imports with .js should be converted to .ts
 import { User } from "./models/user.js";
 import { Database } from "../database/connection.js";
-import { AuthService } from "../../services/auth.js";
 
 // Local imports with no extension should get .ts added
 import { Logger } from "./utils/logger";
@@ -32,7 +31,6 @@ export class ComprehensiveTest {
   constructor(
     private user: InstanceType<typeof User>,
     private db: Database,
-    private auth: AuthService,
     private logger: Logger,
     private config: typeof Config,
     private types: Types,
