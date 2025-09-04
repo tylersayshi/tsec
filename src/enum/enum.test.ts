@@ -59,7 +59,7 @@ Deno.test("enum usage with arrays, maps and complex data structures", async () =
   await testFn("data-structures");
 });
 
-Deno.test.only(
+Deno.test(
   "converts enums across multiple files with imports",
   async () => {
     await projectTestFn("proj");

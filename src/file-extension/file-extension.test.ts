@@ -1,9 +1,17 @@
-import { executeTest } from "../utils/test.ts";
-import { fileExtensionCodemod } from "./file-extension.ts";
+import { executeProjectTest, executeTest } from "../utils/test.ts";
+import {
+  fileExtensionCodemod,
+  processJavaScriptFilesWithGlob,
+} from "./file-extension.ts";
 
 const testFileExtension = executeTest({
   testDir: "src/file-extension/spec/",
   codemod: fileExtensionCodemod,
+});
+
+const testProject = executeProjectTest({
+  testDir: "src/file-extension/spec/",
+  codemod: processJavaScriptFilesWithGlob,
 });
 
 Deno.test("converts .js extensions to .ts", async () => {
@@ -56,4 +64,8 @@ Deno.test("handles multiple imports in single file", async () => {
 
 Deno.test("handles complex relative paths", async () => {
   await testFileExtension("complex-paths");
+});
+
+Deno.test("handles project files with glob pattern", async () => {
+  await testProject("proj");
 });

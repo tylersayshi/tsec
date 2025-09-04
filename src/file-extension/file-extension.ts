@@ -5,6 +5,7 @@ import {
   StringLiteral,
   SyntaxKind,
 } from "ts-morph";
+import { globToRegExp, joinGlobs } from "jsr:@std/path";
 
 const project = new Project();
 
@@ -105,4 +106,37 @@ export function fileExtensionCodemod(filePath: string): void {
   });
 
   sourceFile.saveSync();
+}
+
+export function processJavaScriptFilesWithGlob(globPath: string): void {
+  // The glob path is passed from executeProjectTest and looks like "path/to/dir/*.ts"
+  // Extract the directory part and use the glob pattern
+  const lastSlash = globPath.lastIndexOf('/');
+  const basePath = globPath.substring(0, lastSlash);
+  const globPattern = globPath.substring(lastSlash + 1);
+  
+  // Create regex for the glob pattern
+  const regex = globToRegExp(globPattern);
+  
+  try {
+    // Read the directory and find files matching the pattern
+    const entries = Array.from(Deno.readDirSync(basePath));
+    
+    for (const entry of entries) {
+      if (entry.isFile && regex.test(entry.name)) {
+        const filePath = `${basePath}/${entry.name}`;
+        console.log(`Processing TypeScript file with .js import extensions: ${filePath}`);
+        
+        try {
+          // Apply the same file extension transformation as the main codemod
+          fileExtensionCodemod(filePath);
+          console.log(`Converted .js import extensions to .ts in: ${filePath}`);
+        } catch (error) {
+          console.error(`Error processing ${filePath}:`, error);
+        }
+      }
+    }
+  } catch (error) {
+    console.error(`Error reading directory ${basePath}:`, error);
+  }
 }
