@@ -120,3 +120,71 @@ export const executeTest = (config: {
     }
   };
 };
+
+export const executeProjectTest = (config: {
+  testDir: `${string}/`;
+  codemod: (globPath: string) => void;
+  checkTsOptions?: string[];
+}) => {
+  const { testDir, codemod, checkTsOptions } = config;
+
+  return async (
+    projectSlug: string,
+  ) => {
+    const projectDir = testDir + projectSlug + "/";
+    const tmpDir = testDir + projectSlug + ".modded/";
+    
+    try {
+      // Find all .in.ts files in the project directory
+      const entries = [];
+      for await (const entry of Deno.readDir(projectDir)) {
+        if (entry.isFile && entry.name.endsWith(".in.ts")) {
+          entries.push(entry.name);
+        }
+      }
+
+      // Create temp directory and copy files
+      await Deno.mkdir(tmpDir, { recursive: true });
+      
+      for (const fileName of entries) {
+        const originalContent = await Deno.readTextFile(projectDir + fileName);
+        const tmpFileName = fileName.replace(".in.ts", ".ts");
+        const tmpFilePath = tmpDir + tmpFileName;
+        
+        await Deno.writeTextFile(tmpFilePath, originalContent);
+      }
+
+      // Run codemod on the temp directory (pass glob pattern)
+      codemod(tmpDir + "*.ts");
+
+      // Format all files
+      for (const fileName of entries) {
+        const tmpFileName = fileName.replace(".in.ts", ".ts");
+        const tmpFilePath = tmpDir + tmpFileName;
+        await denoFmt(tmpFilePath);
+      }
+
+      // Verify against expected outputs
+      for (const fileName of entries) {
+        const outFileName = fileName.replace(".in.ts", ".out.ts");
+        const tmpFileName = fileName.replace(".in.ts", ".ts");
+        
+        const expectedOutput = await Deno.readTextFile(projectDir + outFileName);
+        const actualOutput = await Deno.readTextFile(tmpDir + tmpFileName);
+        
+        await checkTsFile(tmpDir + tmpFileName, checkTsOptions);
+        assertEquals(actualOutput, expectedOutput, `File ${fileName} transformation mismatch`);
+      }
+      
+    } finally {
+      // Clean up temp directory
+      if (!Deno.env.get("DEBUG")) {
+        try {
+          await Deno.remove(tmpDir, { recursive: true });
+        } catch {
+          // Ignore cleanup errors
+        }
+      }
+    }
+  };
+};

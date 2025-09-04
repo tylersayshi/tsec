@@ -83,6 +83,7 @@ function updateEnumReferences(sourceFile: Node, enumNames: string[]): void {
 }
 
 export function enumCodemod(filePath: string): void {
+  // breaking on glob
   const sourceFile = project.addSourceFileAtPath(filePath);
 
   const enums = sourceFile.getEnums();

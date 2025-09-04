@@ -1,7 +1,12 @@
-import { executeTest } from "../utils/test.ts";
+import { executeProjectTest, executeTest } from "../utils/test.ts";
 import { enumCodemod } from "./enum.ts";
 
 const testFn = executeTest({
+  testDir: "src/enum/spec/",
+  codemod: enumCodemod,
+});
+
+const projectTestFn = executeProjectTest({
   testDir: "src/enum/spec/",
   codemod: enumCodemod,
 });
@@ -53,3 +58,10 @@ Deno.test("enum usage in template literals and conditionals", async () => {
 Deno.test("enum usage with arrays, maps and complex data structures", async () => {
   await testFn("data-structures");
 });
+
+Deno.test.only(
+  "converts enums across multiple files with imports",
+  async () => {
+    await projectTestFn("proj");
+  },
+);
