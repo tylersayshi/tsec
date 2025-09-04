@@ -5,9 +5,5 @@
     "@std/path": "jsr:@std/path@^1.0.0",
     "ts-morph": "jsr:@ts-morph/ts-morph@^26.0.0"
   },
-  "lint": {
-    "exclude": [
-      "./**/spec/*.ts"
-    ]
-  }
+  "exclude": ["**/spec/"]
 }
